@@ -8,7 +8,8 @@ class User(BaseModel):
     hashed_password: str
     full_name: str
     role: str
-    is_verified: bool = False
+    verification_status: str = "unverified"
+    avatar_url: Optional[str] = None
     created_at: datetime = datetime.now()
 
 class Campaign(BaseModel):
@@ -20,7 +21,10 @@ class Campaign(BaseModel):
     current_amount: float = 0.0
     currency: str = "UAH"
     status: str = "active"
+    image_url: Optional[str] = None
     created_at: datetime = datetime.now()
+    author_name: str = "Анонімний волонтер"
+    is_author_verified: bool = False
 
 class Transaction(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
