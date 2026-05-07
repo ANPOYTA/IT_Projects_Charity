@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware # ДОДАНО: імпорт CORS
 from bson import ObjectId
-from database import users_collection, campaigns_collection, transactions_collection
+from database.database import users_collection, campaigns_collection, transactions_collection
 from models import User, Campaign, Transaction
 from typing import List
 from passlib.context import CryptContext
