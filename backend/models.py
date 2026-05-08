@@ -1,7 +1,15 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
+from pydantic import BaseModel, EmailStr
 
+class UserRegisterRequest(BaseModel):
+    name: str
+    surname: str
+    phone: str
+    email: EmailStr
+    password: str
+    
 class User(BaseModel):
     id: Optional[str] = Field(None, alias="_id") 
     email: EmailStr
