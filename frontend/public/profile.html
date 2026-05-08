@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій профіль — Разом</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <a href="index.html"><img src="images/logo.svg" alt="Разом"></a>
+        </div>
+        <nav class="menu">
+            <a href="index.html">Головна</a>
+            <a href="index.html#about">Про нас</a>
+            <a href="donations.html">Актуальні збори</a>
+        </nav>
+    
+        <div class="header-user-block">
+            <div class="header-user-text">
+                <span class="header-user-name" id="profile-name">Завантаження...</span>
+                <span class="header-user-email" id="profile-email">...</span>
+            </div>
+        
+            <div class="user-menu-container" id="user-menu-container">
+                <button class="user-icon-btn" id="user-icon-btn">
+                    <div class="header-avatar-wrapper">
+                        <img src="images/user.svg" alt="Користувач" class="header-avatar">
+                    </div>
+                </button>
+        
+                <div class="user-dropdown hidden" id="user-dropdown">
+                    <a href="profile.html" class="dropdown-item">Мій профіль</a>
+                    <button class="dropdown-item" id="logout-btn">Вийти</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="profile-page" style="min-height: 70vh; padding: 40px 5%;">
+
+        <div class="profile-tabs">
+            <button class="tab-btn active" id="btn-donations" onclick="switchTab('donations')">Мої донати</button>
+            <button class="tab-btn" id="btn-campaigns" onclick="switchTab('campaigns')">Мої збори</button>
+        </div>
+
+        <div id="tab-donations" class="tab-content active">
+            <div class="donations-grid" id="my-donations-grid">
+                <p style="text-align: center; width: 100%; color: var(--text-gray);">Тут будуть відображатися збори, які
+                    ви підтримали.</p>
+            </div>
+        </div>
+
+        <div id="tab-campaigns" class="tab-content hidden">
+
+            <div id="unverified-view" class="unverified-container hidden">
+                <p>Щоб розмістити свій збір, необхідно верифікувати особу</p>
+                <a href="verification.html" class="btn btn-large-green">Пройти верифікацію</a>
+            </div>
+
+            <div id="verified-view" class="verified-container hidden">
+                <div class="donations-grid" id="my-campaigns-grid">
+                </div>
+                <div style="text-align: center; margin-top: 40px;">
+                    <a href="create-campaign.html" class="btn btn-large-green">Розмістити збір</a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-logo">
+            <img src="images/logo-large.svg" alt="Разом великий логотип">
+        </div>
+        <p>&copy; 2026 Розрахункова робота. Управління IT-проєктами.</p>
+    </footer>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000'; // Адреса твого бекенда
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Завантажуємо все паралельно
+            loadUserProfile(token);
+            fetchMyDonations(token);
+            fetchMyCampaigns(token);
+            setupDropdown();
+        });
+
+        function setupDropdown() {
+                const userIconBtn = document.getElementById('user-icon-btn');
+                const userDropdown = document.getElementById('user-dropdown');
+                const logoutBtn = document.getElementById('logout-btn');
+                const userMenuContainer = document.getElementById('user-menu-container');
+
+                if (userIconBtn && userDropdown) {
+                    // Відкриття/закриття при кліку на іконку
+                    userIconBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        userDropdown.classList.toggle('hidden');
+                    });
+
+                    // Закриття при кліку поза межами меню
+                    document.addEventListener('click', (e) => {
+                        if (!userMenuContainer.contains(e.target)) {
+                            userDropdown.classList.add('hidden');
+                        }
+                    });
+                }
+
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        localStorage.removeItem('jwt_token');
+                        window.location.href = 'index.html'; // Після виходу кидаємо на головну
+                    });
+                }
+            }
+
+        // 1. Завантаження даних профілю (Ім'я, Пошта, Статус)
+        async function loadUserProfile(token) {
+            try {
+                const response = await fetch(`${API_URL}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Не вдалося завантажити профіль');
+
+                const user = await response.json();
+
+                // Підставляємо дані в шапку
+                document.getElementById('profile-name').textContent = user.full_name;
+                document.getElementById('profile-email').textContent = user.email;
+
+                // Перевірка верифікації для вкладки "Мої збори"
+                if (user.verification_status === 'verified') {
+                    document.getElementById('verified-view').classList.remove('hidden');
+                    document.getElementById('unverified-view').classList.add('hidden');
+                } else {
+                    document.getElementById('unverified-view').classList.remove('hidden');
+                    document.getElementById('verified-view').classList.add('hidden');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // 2. Завантаження донатів користувача
+        async function fetchMyDonations(token) {
+            const grid = document.getElementById('my-donations-grid');
+            try {
+                const response = await fetch(`${API_URL}/users/me/donations`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const donations = await response.json();
+
+                if (donations.length === 0) {
+                    grid.innerHTML = '<p class="empty-message">Тут будуть відображатися збори, які ви підтримали.</p>';
+                    return;
+                }
+
+                grid.innerHTML = '';
+                donations.forEach(campaign => grid.insertAdjacentHTML('beforeend', createCardHTML(campaign)));
+                animateProgressBars();
+            } catch (error) {
+                grid.innerHTML = '<p class="empty-message">Помилка завантаження донатів.</p>';
+            }
+        }
+
+        // 3. Завантаження зборів, які створив користувач
+        async function fetchMyCampaigns(token) {
+            const grid = document.getElementById('my-campaigns-grid');
+            try {
+                const response = await fetch(`${API_URL}/users/me/campaigns`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const campaigns = await response.json();
+
+                if (campaigns.length === 0) {
+                    grid.innerHTML = '<p class="empty-message">Ви ще не створили жодного збору.</p>';
+                    return;
+                }
+
+                grid.innerHTML = '';
+                campaigns.forEach(campaign => grid.insertAdjacentHTML('beforeend', createCardHTML(campaign)));
+                animateProgressBars();
+            } catch (error) {
+                grid.innerHTML = '<p class="empty-message">Помилка завантаження ваших зборів.</p>';
+            }
+        }
+
+        // Допоміжна функція для створення HTML картки
+        function createCardHTML(campaign) {
+            const percent = Math.min((campaign.current_amount / campaign.goal_amount) * 100, 100).toFixed(0);
+            return `
+                    <div class="card">
+                        <div class="card-image-wrapper">
+                            <img src="${campaign.image_url || 'images/default-campaign.jpg'}" class="card-image">
+                        </div>
+                        <div class="card-info">
+                            <h3>${campaign.title}</h3>
+                            <p class="description">${campaign.description}</p>
+                            <div class="progress-container">
+                                <div class="progress-labels">
+                                    <span>Зібрано: ${campaign.current_amount.toLocaleString()} ₴</span>
+                                    <span>Ціль: ${campaign.goal_amount.toLocaleString()} ₴</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;" data-target="${percent}%"></div>
+                                </div>
+                            </div>
+                            <a href="${campaign.payment_url || '#'}" target="_blank" class="btn btn-primary btn-full">Задонатити</a>
+                        </div>
+                    </div>`;
+        }
+
+        function switchTab(tabName) {
+            document.getElementById('btn-donations').classList.toggle('active', tabName === 'donations');
+            document.getElementById('btn-campaigns').classList.toggle('active', tabName === 'campaigns');
+            document.getElementById('tab-donations').classList.toggle('hidden', tabName !== 'donations');
+            document.getElementById('tab-campaigns').classList.toggle('hidden', tabName !== 'campaigns');
+        }
+
+        function animateProgressBars() {
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-target');
+                });
+            }, 100);
+        }
+    </script>
+</body>
+
+</html>

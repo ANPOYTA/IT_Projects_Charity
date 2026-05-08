@@ -551,3 +551,180 @@ html {
         padding: 20px;
     }
 }
+
+.hidden {
+    display: none !important;
+}
+
+.user-menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.user-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.user-icon-btn:hover {
+    transform: scale(1.1);
+}
+
+.user-icon-btn img {
+    width: 36px;
+    height: 36px;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 160px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: 'Rubik', sans-serif;
+}
+
+.dropdown-item:hover {
+    background-color: #F4DBD4;
+}
+
+/* =========================================
+   ОСОБИСТИЙ КАБІНЕТ (profile.html)
+========================================= */
+
+.header-user-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.header-user-text {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.header-user-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-dark);
+}
+
+.header-user-email {
+    font-size: 12px;
+    color: var(--text-gray);
+}
+
+.header-avatar-wrapper {
+    padding-bottom: 4px;
+    border-bottom: 3px solid var(--orange-color);
+}
+
+.header-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #D9D9D9;
+    object-fit: cover;
+    display: block;
+}
+
+.profile-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 50px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-dark);
+    cursor: pointer;
+    padding-bottom: 8px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    color: var(--green-color);
+    border-bottom: 2px solid var(--orange-color);
+}
+
+.tab-content {
+    display: block;
+}
+
+.tab-content.hidden {
+    display: none !important;
+}
+
+.unverified-container {
+    text-align: center;
+    margin-top: 80px;
+}
+
+.unverified-container p {
+    font-size: 18px;
+    color: var(--text-dark);
+    margin-bottom: 30px;
+}
+
+.btn-large-green {
+    background-color: var(--green-color);
+    color: white;
+    padding: 16px 40px;
+    font-size: 18px;
+    border-radius: 30px;
+    display: inline-block;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.btn-large-green:hover {
+    background-color: #005A4A;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 113, 93, 0.3);
+}
+
+.empty-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 0;
+    color: var(--text-gray);
+    font-size: 16px;
+}
+
+.header-user-block .user-dropdown {
+    right: 0;
+    top: 55px;
+}

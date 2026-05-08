@@ -21,7 +21,18 @@
             <a href="donations.html" class="active">Актуальні збори</a>
         </nav>
         <div class="auth">
-            <a href="login.html" class="btn btn-primary">Sign In &rarr;</a>
+            <a href="login.html" class="btn btn-primary" id="login-btn">Sign In &rarr;</a>
+        
+            <div class="user-menu-container hidden" id="user-menu-container">
+                <button class="user-icon-btn" id="user-icon-btn">
+                    <img src="images/user.svg" alt="Профіль">
+                </button>
+        
+                <div class="user-dropdown hidden" id="user-dropdown">
+                    <a href="profile.html" class="dropdown-item">Мій профіль</a>
+                    <button class="dropdown-item" id="logout-btn">Вийти</button>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -45,6 +56,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             fetchAllCampaigns();
+            checkAuthState();
+            setupDropdown();
         });
 
         async function fetchAllCampaigns() {
@@ -108,6 +121,47 @@
                 });
             }, 100);
         }
+
+        function checkAuthState() {
+                const token = localStorage.getItem('jwt_token');
+                const loginBtn = document.getElementById('login-btn');
+                const userMenu = document.getElementById('user-menu-container');
+
+                if (token) {
+                    loginBtn.classList.add('hidden');
+                    userMenu.classList.remove('hidden');
+                } else {
+                    loginBtn.classList.remove('hidden');
+                    userMenu.classList.add('hidden');
+                }
+            }
+
+        function setupDropdown() {
+                const userIconBtn = document.getElementById('user-icon-btn');
+                const userDropdown = document.getElementById('user-dropdown');
+                const logoutBtn = document.getElementById('logout-btn');
+                const userMenuContainer = document.getElementById('user-menu-container');
+
+                if (userIconBtn && userDropdown) {
+                    userIconBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); 
+                        userDropdown.classList.toggle('hidden');
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (!userMenuContainer.contains(e.target)) {
+                            userDropdown.classList.add('hidden');
+                        }
+                    });
+                }
+
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        localStorage.removeItem('jwt_token');
+                        window.location.reload();
+                    });
+                }
+            }
     </script>
 </body>
 
