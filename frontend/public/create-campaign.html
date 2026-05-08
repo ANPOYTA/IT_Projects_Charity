@@ -176,8 +176,6 @@
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
-                        // УВАГА: При використанні FormData НЕ ТРЕБА писати 'Content-Type': 'application/json'.
-                        // Браузер сам встановить 'multipart/form-data' з правильним boundary.
                     },
                     body: formData
                 });
