@@ -66,12 +66,9 @@
 </body>
 
 <script>
-    // Функція, яка спрацює, коли Google успішно підтвердить користувача
     function handleGoogleResponse(response) {
-        // response.credential - це токен від Google. Його треба відправити бекендеру!
         console.log("Токен від Google отримано!", response.credential);
 
-        // Відправляємо токен на ваш бекенд
         fetch('http://ТВІЙ_БЕКЕНД/api/auth/google', {
             method: 'POST',
             headers: {
@@ -81,26 +78,22 @@
         })
             .then(res => res.json())
             .then(data => {
-                // Тут бекенд має повернути ваш JWT токен 
                 console.log("Успішний вхід!", data);
-                // Зберігаємо токен і перекидаємо користувача в особистий кабінет
                 localStorage.setItem('jwt_token', data.access_token);
                 window.location.href = 'profile.html';
             })
             .catch(error => console.error('Помилка авторизації на бекенді:', error));
     }
 
-    // Ініціалізація Google бібліотеки при завантаженні сторінки
     window.onload = function () {
         google.accounts.id.initialize({
             client_id: "ТЮДИ_ВСТАВИТИ_CLIENT_ID_ВІД_БЕКЕНДЕРА.apps.googleusercontent.com",
             callback: handleGoogleResponse
         });
 
-        // Прив'язуємо клік по твоїй кнопці до виклику вікна Google
         const googleButton = document.getElementById('google-btn');
         googleButton.addEventListener('click', () => {
-            google.accounts.id.prompt(); // Викликає спливаюче вікно One Tap
+            google.accounts.id.prompt();
         });
     };
 </script>

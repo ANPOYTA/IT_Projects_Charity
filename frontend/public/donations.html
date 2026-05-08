@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Всі збори — Разом</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <a href="index.html"><img src="images/logo.svg" alt="Разом"></a>
+        </div>
+        <nav class="menu">
+            <a href="index.html">Головна</a>
+            <a href="index.html#about">Про нас</a>
+            <a href="donations.html" class="active">Актуальні збори</a>
+        </nav>
+        <div class="auth">
+            <a href="login.html" class="btn btn-primary">Sign In &rarr;</a>
+        </div>
+    </header>
+
+    <section class="donations" style="padding-top: 40px; min-height: 70vh;">
+        <div class="donations-header">
+            <h2>Всі актуальні збори</h2>
+        </div>
+
+        <div class="donations-grid" id="all-campaigns-grid">
+            <p>Завантаження зборів...</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-logo">
+            <img src="images/logo-large.svg" alt="Разом великий логотип">
+        </div>
+        <p>&copy; 2026 Розрахункова робота. Управління IT-проєктами.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchAllCampaigns();
+        });
+
+        async function fetchAllCampaigns() {
+            const grid = document.getElementById('all-campaigns-grid');
+
+            try {
+                const response = await fetch('/api/campaigns');
+
+                if (!response.ok) throw new Error('Помилка мережі');
+
+                const campaigns = await response.json();
+                grid.innerHTML = '';
+
+                campaigns.forEach(campaign => {
+                    const percent = Math.min((campaign.current_amount / campaign.goal_amount) * 100, 100).toFixed(0);
+                    const verifiedIcon = campaign.is_author_verified ? '✓' : '';
+                    const imageUrl = campaign.image_url || 'images/default-campaign.jpg';
+
+                    const cardHTML = `
+                        <div class="card">
+                            <div class="card-image-wrapper">
+                                <img src="${imageUrl}" class="card-image" alt="Фото збору">
+                            </div>
+                            <div class="card-info">
+                                <div class="author">
+                                    <span class="author-name">${campaign.author_name} <span style="color: #1DA1F2;">${verifiedIcon}</span></span>
+                                </div>
+                                <h3>${campaign.title}</h3>
+                                <p class="description">${campaign.description}</p>
+                                <div class="progress-container">
+                                    <div class="progress-labels">
+                                        <span>Зібрано: ${campaign.current_amount.toLocaleString('uk-UA')} ₴</span>
+                                        <span>Ціль: ${campaign.goal_amount.toLocaleString('uk-UA')} ₴</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 0%;" data-target="${percent}%"></div>
+                                    </div>
+                                </div>
+                                <a href="${campaign.payment_link || '#'}" target="_blank" class="btn btn-primary btn-full">Задонатити</a>
+                            </div>
+                        </div>
+                    `;
+
+                    grid.insertAdjacentHTML('beforeend', cardHTML);
+                });
+
+                animateProgressBars();
+
+            } catch (error) {
+                console.error("Не вдалося завантажити збори:", error);
+                grid.innerHTML = '<p>Помилка завантаження даних. Спробуйте пізніше або перевірте підключення до сервера.</p>';
+            }
+        }
+
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            setTimeout(() => {
+                progressBars.forEach(bar => {
+                    const targetWidth = bar.getAttribute('data-target');
+                    bar.style.width = targetWidth;
+                });
+            }, 100);
+        }
+    </script>
+</body>
+
+</html>
