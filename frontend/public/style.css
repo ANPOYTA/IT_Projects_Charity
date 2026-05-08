@@ -728,3 +728,343 @@ html {
     right: 0;
     top: 55px;
 }
+
+/* =========================================
+   СТВОРЕННЯ НОВОГО ЗБОРУ (create-campaign.html)
+========================================= */
+
+.campaign-form-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.campaign-form-container {
+    border: 1px solid #DED8CC;
+    border-radius: 12px;
+    padding: 40px 60px;
+}
+
+.campaign-form-container .form-group {
+    margin-bottom: 24px;
+}
+
+.campaign-form-container label {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+/* Посилений селектор, щоб перебити прозорий фон зі старих сторінок */
+.campaign-form-container .campaign-input,
+.campaign-form-container .campaign-textarea {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 20px;
+    border: 1px solid #DED8CC;
+    background-color: #FFFFFF;
+    /* Тепер точно скрізь білий */
+    font-size: 16px;
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.3s;
+    font-family: 'Rubik', sans-serif;
+}
+
+.campaign-form-container .campaign-input:focus,
+.campaign-form-container .campaign-textarea:focus {
+    border-color: var(--green-color);
+}
+
+.campaign-textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+/* Два поля в один рядок (Ціль і Банка) */
+.form-row-2 {
+    display: flex;
+    gap: 24px;
+}
+
+.form-row-2 .form-group {
+    flex: 1;
+}
+
+/* Кастомна кнопка додавання фото */
+.file-upload-box {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 40px;
+    border-radius: 20px;
+    border: 1px solid #DED8CC;
+    background-color: #FFFFFF;
+    /* Білий колір кнопки */
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.file-upload-box span {
+    color: var(--text-gray);
+    font-size: 16px;
+}
+
+/* Справжній інпут ховаємо, але розтягуємо на всю площу */
+.file-upload-box input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-box:hover {
+    border-color: var(--green-color);
+}
+
+@media (max-width: 768px) {
+    .campaign-form-container {
+        padding: 30px 20px;
+    }
+
+    .form-row-2 {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+/* =========================================
+   ВЕРИФІКАЦІЯ (verification.html)
+========================================= */
+
+.verification-body {
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.verification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 5%;
+}
+
+.back-arrow img {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.2s;
+}
+
+.back-arrow:hover img {
+    transform: translateX(-5px);
+}
+
+/* ПРОГРЕС БАР */
+.progress-tracker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+    border: 1px solid #DED8CC;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-gray);
+    transition: all 0.3s ease;
+}
+
+.step-circle.active {
+    background-color: var(--green-color);
+    color: #FFFFFF;
+    border-color: var(--green-color);
+}
+
+.step-line {
+    width: 60px;
+    height: 2px;
+    background-color: #DED8CC;
+    transition: all 0.3s ease;
+}
+
+.step-line.active {
+    background-color: var(--green-color);
+}
+
+/* БІЛИЙ КОНТЕЙНЕР ФОРМИ */
+.verification-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+}
+
+.verification-box {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 800px;
+    padding: 60px;
+    text-align: center;
+    position: relative;
+}
+
+.verify-step h2 {
+    font-size: 20px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.verify-step .subtitle {
+    font-size: 14px;
+    color: var(--text-gray);
+    margin-bottom: 40px;
+}
+
+/* Інпут для ID */
+.verify-input-group {
+    max-width: 300px;
+    margin: 0 auto 30px auto;
+    text-align: left;
+}
+
+.verify-input-group label {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-bottom: 8px;
+    text-align: center;
+    display: block;
+}
+
+.verify-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #DED8CC;
+    border-radius: 8px;
+    text-align: center;
+    outline: none;
+}
+
+.verify-input:focus {
+    border-color: var(--green-color);
+}
+
+/* Кнопка завантаження файлу */
+.verify-upload-container {
+    max-width: 400px;
+    margin: 0 auto 40px auto;
+}
+
+.upload-label {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-bottom: 16px;
+}
+
+.verify-file-box {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 30px;
+    border: 1px solid var(--text-dark);
+    border-radius: 30px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.verify-file-box span {
+    font-size: 14px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.verify-file-box input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.verify-file-box:hover {
+    background-color: #F5F5F5;
+}
+
+/* Чорна кнопка */
+.btn-black {
+    background-color: var(--text-dark);
+    color: #FFFFFF;
+    border: none;
+    padding: 14px 60px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    margin-bottom: 40px;
+}
+
+.btn-black:hover {
+    background-color: #333333;
+    transform: translateY(-2px);
+}
+
+/* Футер підтримки всередині боксу */
+.verify-support {
+    border-top: 1px solid #F0F0F0;
+    padding-top: 20px;
+    font-size: 10px;
+    color: var(--text-gray);
+}
+
+.verify-support a {
+    color: var(--text-dark);
+    font-weight: 700;
+    text-decoration: none;
+    display: block;
+    margin-top: 4px;
+}
+
+/* ФІНАЛЬНИЙ ЕКРАН */
+.verify-success {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.success-icon {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 30px;
+}
+
+.verify-success h2 {
+    font-size: 32px;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.verify-success p {
+    font-size: 16px;
+    color: var(--text-dark);
+    margin-bottom: 40px;
+}

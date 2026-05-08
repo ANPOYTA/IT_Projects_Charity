@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розмістити збір — Разом</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <a href="index.html"><img src="images/logo.svg" alt="Разом"></a>
+        </div>
+        <nav class="menu">
+            <a href="index.html">Головна</a>
+            <a href="index.html#about">Про нас</a>
+            <a href="donations.html">Актуальні збори</a>
+        </nav>
+
+        <div class="header-user-block">
+            <div class="header-user-text">
+                <span class="header-user-name" id="profile-name">Завантаження...</span>
+                <span class="header-user-email" id="profile-email">...</span>
+            </div>
+            <div class="user-menu-container" id="user-menu-container">
+                <button class="user-icon-btn" id="user-icon-btn">
+                    <div class="header-avatar-wrapper">
+                        <img src="images/user.svg" alt="Користувач" class="header-avatar">
+                    </div>
+                </button>
+                <div class="user-dropdown hidden" id="user-dropdown">
+                    <a href="profile.html" class="dropdown-item">Мій профіль</a>
+                    <button class="dropdown-item" id="logout-btn">Вийти</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="profile-page" style="min-height: 70vh; padding: 40px 5%;">
+
+        <div class="profile-tabs">
+            <a href="profile.html" class="tab-btn" style="text-decoration: none;">Мої донати</a>
+            <a href="profile.html" class="tab-btn active" style="text-decoration: none;">Мої збори</a>
+        </div>
+
+        <div class="campaign-form-wrapper">
+            <form id="create-campaign-form" class="campaign-form-container">
+
+                <div class="form-group">
+                    <label for="title">Назва збору</label>
+                    <input type="text" id="title" class="campaign-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Опис збору</label>
+                    <textarea id="description" class="campaign-textarea" required></textarea>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="goal_amount">Ціль збору (₴)</label>
+                        <input type="number" id="goal_amount" class="campaign-input" placeholder="Наприклад: 50000"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_url">Посилання на банку</label>
+                        <input type="url" id="payment_url" class="campaign-input"
+                            placeholder="https://send.monobank.ua/..." required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Додати фото</label>
+                    <div class="file-upload-box">
+                        <span id="file-name-display">Вибрати файл</span>
+                        <input type="file" id="image" accept="image/*" onchange="updateFileName(this)">
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <button type="submit" class="btn btn-large-green">Розмістити збір</button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-logo">
+            <img src="images/logo-large.svg" alt="Разом великий логотип">
+        </div>
+        <p>&copy; 2026 Розрахункова робота. Управління IT-проєктами.</p>
+    </footer>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadUserProfile(token);
+            setupDropdown();
+        });
+
+        // Завантаження даних профілю для шапки
+        async function loadUserProfile(token) {
+            try {
+                const response = await fetch(`${API_URL}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('profile-name').textContent = user.full_name;
+                    document.getElementById('profile-email').textContent = user.email;
+                }
+            } catch (error) {
+                console.error("Помилка:", error);
+            }
+        }
+
+        // Логіка випадаючого меню
+        function setupDropdown() {
+            const userIconBtn = document.getElementById('user-icon-btn');
+            const userDropdown = document.getElementById('user-dropdown');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            userIconBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => userDropdown.classList.add('hidden'));
+
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('jwt_token');
+                window.location.href = 'index.html';
+            });
+        }
+
+        // Відображення назви вибраного файлу
+        function updateFileName(input) {
+            const display = document.getElementById('file-name-display');
+            if (input.files && input.files[0]) {
+                display.textContent = input.files[0].name;
+            } else {
+                display.textContent = 'Вибрати файл';
+            }
+        }
+
+        // Відправка форми
+        document.getElementById('create-campaign-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('jwt_token');
+
+            // Використовуємо FormData, бо ми відправляємо файл (картинку)
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('goal_amount', document.getElementById('goal_amount').value);
+            formData.append('payment_url', document.getElementById('payment_url').value);
+
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile); // Назва поля має збігатися з тим, що чекає бекенд
+            }
+
+            try {
+                // Відправляємо на бекенд
+                const response = await fetch(`${API_URL}/campaigns/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // УВАГА: При використанні FormData НЕ ТРЕБА писати 'Content-Type': 'application/json'.
+                        // Браузер сам встановить 'multipart/form-data' з правильним boundary.
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Збір успішно створено!');
+                    window.location.href = 'profile.html'; // Повертаємось у кабінет
+                } else {
+                    alert('Помилка при створенні збору. Перевірте дані.');
+                }
+            } catch (error) {
+                console.error("Помилка:", error);
+                alert('Не вдалося з\'єднатися з сервером.');
+            }
+        });
+    </script>
+</body>
+
+</html>
