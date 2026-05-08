@@ -79,7 +79,12 @@
                     </div>
                 </div>
 
-                <button class="btn-black" onclick="finishVerification()">Підтвердити</button>
+                <button type="button" class="btn-black" id="finish-btn">Підтвердити</button>
+            </div>
+            <div id="step-success" class="verify-step hidden" style="text-align: center;">
+                <h2 style="margin-bottom: 20px;">Верифікація закінчена</h2>
+                <p style="margin-bottom: 30px;">Дякуємо за довіру, результати верифікації очікуйте впродовж 24 годин</p>
+                <a href="index.html" class="btn-large-green" style="display: block;">Повернутися на головну</a>
             </div>
 
             <div class="verify-support">
@@ -89,7 +94,6 @@
         </div>
 
         <div id="step-success" class="verify-success hidden">
-            <img src="images/verified.svg" alt="Успіх" class="success-icon">
             <h2>Верифікація закінчена</h2>
             <p>Дякуємо за довіру, результати верифікації очікуйте впродовж 24 годин</p>
             <a href="index.html" class="btn btn-large-green">Повернутися на головну сторінку</a>
@@ -126,7 +130,7 @@
 
                 if (!passportId) {
                     alert('Будь ласка, введіть ID паспорта.');
-                    return; // Зупиняємо функцію, далі не йдемо
+                    return;
                 }
                 if (file1 === 0) {
                     alert('Будь ласка, завантажте фото передньої частини паспорта.');
@@ -149,65 +153,61 @@
 
             // Оновлюємо прогрес-бар
             const currentCircle = document.getElementById(`circle-${currentStep}`);
-            currentCircle.innerHTML = '✔'; // Ставимо галочку
+            currentCircle.innerHTML = '✔';
 
             const nextLine = document.getElementById(`line-${currentStep}`);
-            nextLine.classList.add('active'); // Зафарбовуємо лінію
+            nextLine.classList.add('active');
 
             const nextCircle = document.getElementById(`circle-${currentStep + 1}`);
-            nextCircle.classList.add('active'); // Робимо наступний кружечок зеленим
+            nextCircle.classList.add('active');
         }
 
+        document.getElementById('finish-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            finishVerification(e);
+        });
+
         // Фініш верифікації та ВІДПРАВКА НА БЕКЕНД
-        async function finishVerification() {
-            // Перевірка 3-го кроку
+       async function finishVerification(event) {
+            if (event) event.preventDefault();
+
             const file3 = document.getElementById('file-3').files;
             if (file3.length === 0) {
-                alert('Будь ласка, завантажте ваше фото з паспортом.');
+                alert('Завантажте фото!');
                 return;
             }
 
             const token = localStorage.getItem('jwt_token');
-
-            // Пакуємо всі дані у FormData (бо ми шлемо файли)
             const formData = new FormData();
             formData.append('passport_id', document.getElementById('passport-id').value.trim());
             formData.append('photo_front', document.getElementById('file-1').files[0]);
             formData.append('photo_back', document.getElementById('file-2').files[0]);
             formData.append('photo_selfie', document.getElementById('file-3').files[0]);
 
-            // Для краси: можемо змінити текст на кнопці, поки йде завантаження
-            const btn = document.querySelector('#step-3 .btn-black');
-            const originalText = btn.textContent;
-            btn.textContent = 'Відправка...';
-            btn.disabled = true;
-
             try {
-                // Відправляємо на бекенд (узгодь точну адресу ендпоінту з бекендером, наприклад /users/verify)
                 const response = await fetch(`${API_URL}/users/verify`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                        // З FormData заголовок 'Content-Type' браузер ставить автоматично!
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
 
                 if (response.ok) {
-                    // Якщо бекенд сказав "ОК", показуємо фінальний екран
-                    document.getElementById('verification-form-box').classList.add('hidden');
-                    document.querySelector('.verification-header').classList.add('hidden');
-                    document.getElementById('step-success').classList.remove('hidden');
-                } else {
-                    alert('Помилка при відправці документів. Можливо, такий паспорт вже існує.');
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                    console.log("Дані успішно відправлені");
+
+                    document.getElementById('step-3').classList.add('hidden');
+                    document.getElementById('support-block').classList.add('hidden');
+                    
+                    document.querySelector('.verification-header').style.visibility = 'hidden';
+                    const successBlock = document.getElementById('step-success');
+                    successBlock.classList.remove('hidden');
+                    document.getElementById('verification-form-box').style.minHeight = 'auto';
+
+                    alert("Верифікацію завершено!");
+                }else {
+                    alert("Помилка сервера");
                 }
-            } catch (error) {
-                console.error("Помилка відправки:", error);
-                alert("Не вдалося з'єднатися з сервером. Спробуйте пізніше.");
-                btn.textContent = originalText;
-                btn.disabled = false;
+            } catch (e) {
+                alert("Помилка з'єднання");
             }
         }
     </script>
