@@ -1,0 +1,407 @@
+:root {
+    --bg-color: #F9F5E8;
+    --green-color: #00715D;
+    --orange-color: #E17153;
+    --text-dark: #1A1A1A;
+    --text-gray: #666666;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Rubik', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    /* Щоб нічого не вилазило за екран */
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Шапка */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 5%;
+    /* Зменшили верх/низ до 16px */
+}
+
+.logo,
+.auth {
+    flex: 1;
+}
+
+.auth {
+    display: flex;
+    justify-content: flex-end;
+    /* Кнопку притискаємо вправо */
+}
+
+.menu {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    /* Меню по центру */
+}
+
+.menu a {
+    text-decoration: none;
+    color: var(--text-dark);
+    margin: 0 16px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.menu a:hover {
+    color: var(--orange-color);
+}
+
+.menu a.active {
+    color: var(--green-color);
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--orange-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #D36042;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(225, 113, 83, 0.3);
+}
+
+.btn-full {
+    width: 100%;
+    margin-top: 16px;
+}
+
+/* --- ГОЛОВНИЙ БЛОК HERO --- */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5% 60px 0;
+    /* Верхній padding = 0 */
+    gap: 40px;
+}
+
+.hero-left {
+    flex: 1;
+    max-width: 600px;
+    padding-left: 5%;
+    /* Компенсуємо нульовий padding секції */
+}
+
+.hero-left h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero-left p {
+    font-size: 16px;
+    color: var(--text-gray);
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+/* Зелений шейп зі статистикою */
+.stats-shape {
+    background-color: var(--green-color);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 40px 30px 5%;
+    border-radius: 0 80px 80px 0;
+    /* Створює ту саму форму, що й Shape.png! */
+    margin-left: -5%;
+    /* Притягує до самого лівого краю екрану */
+    width: 105%;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-item h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.stat-item p {
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 0.9;
+    color: #FFFFFF;
+    /* Текст тепер білий */
+}
+
+/* Картки справа в Hero */
+/* --- КАРТКИ СПРАВА В HERO --- */
+.hero-right {
+    flex: 1;
+    position: relative;
+    /* Важливо для накладання карток */
+    min-height: 550px;
+    display: flex;
+    align-items: center;
+    max-width: 540px;
+    /* Обмежуємо загальну ширину блоку з картками */
+}
+
+/* Універсальні стилі картки (зробили їх вужчими і "вищими") */
+.card {
+    background: white;
+    border-radius: 32px;
+    /* Збільшили заокруглення кутів, як на макеті */
+    padding: 24px;
+    /* Більші відступи всередині */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* Автоматична відстань між елементами всередині картки */
+}
+
+/* Прибираємо старі марджіни, бо тепер працює gap */
+.card h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.card .description {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-gray);
+    line-height: 1.5;
+}
+
+.progress-container {
+    margin-top: 0;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+}
+
+.big-card {
+    width: 320px;
+    position: absolute;
+    left: 0;
+    z-index: 2;
+    /* За замовчуванням спереду */
+}
+
+.big-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+    z-index: 3;
+    /* Залишається спереду при наведенні */
+}
+
+/* Точне позиціонування: Маленька картка */
+.small-card {
+    width: 280px;
+    position: absolute;
+    right: 0;
+    z-index: 1;
+    /* За замовчуванням ззаду */
+    transform: scale(0.9);
+    transform-origin: center right;
+    opacity: 0.95;
+}
+
+/* Спеціальний hover для маленької картки */
+.small-card:hover {
+    /* Зберігаємо масштаб 0.9 і додаємо зсув вгору на 5px */
+    transform: scale(0.9) translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+    z-index: 3;
+    /* Виїжджає ПОВЕРХ великої картки! */
+    opacity: 1;
+    /* Стає повністю непрозорою */
+}
+
+/* Маска для фото (адаптована під нову ширину) */
+/* Просте фото з акуратними кутами */
+.card-image-wrapper {
+    width: 100%;
+    height: 200px;
+    /* Висота фотографії */
+    background-color: #e0e0e0;
+    /* Сірий фон на випадок, якщо фото ще вантажиться */
+    border-radius: 16px;
+    /* Заокруглюємо кути самої фотографії */
+    overflow: hidden;
+    /* Обрізаємо все, що вилазить за ці кути */
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Щоб фото ідеально заповнювало блок без розтягування */
+}
+
+.author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.author-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.author-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+/* Прогрес бар */
+.progress-container {
+    margin-top: 16px;
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #EAEAEA;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    /* Початкова ширина 0 для анімації */
+    background-color: var(--orange-color);
+    border-radius: 10px;
+    transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+    /* Дуже плавна анімація */
+}
+
+/* --- БЛОК ПРО НАС --- */
+.about-container {
+    background-color: var(--orange-color);
+    color: white;
+    border-radius: 40px;
+    padding: 60px 5%;
+    margin: 60px 5%;
+    text-align: center;
+}
+
+.about-grid {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin-top: 40px;
+}
+
+.about-item img {
+    margin-bottom: 10px;
+    height: 50px;
+}
+
+/* --- АКТУАЛЬНІ ЗБОРИ --- */
+.donations {
+    padding: 60px 5%;
+}
+
+.donations-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 40px;
+}
+
+.donations-header h2 {
+    font-size: 32px;
+    color: var(--text-dark);
+}
+
+.donations-header .view-more {
+    color: var(--orange-color);
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s ease;
+}
+
+.donations-header .view-more:hover {
+    transform: translateX(5px);
+    /* Стрілочка "їде" вправо при наведенні */
+}
+
+.donations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 колонки */
+    gap: 30px;
+    /* Відстань між картками */
+}
+
+/* --- ФУТЕР --- */
+.footer {
+    text-align: center;
+    padding: 60px 5% 40px 5%;
+    margin-top: 40px;
+    background-image: url('images/heart-bg.svg');
+    /* Якщо експортуєш серце з лініями на фоні */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.footer-logo img {
+    max-width: 180px;
+    margin-bottom: 24px;
+}
+
+.footer p {
+    color: var(--text-gray);
+    font-size: 14px;
+}
