@@ -14,7 +14,10 @@ app = FastAPI(title="Вебплатформа для зборів API")
 # Налаштування CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,6 +56,7 @@ async def get_user_campaigns(user_id: str):
     campaigns = []
     cursor = campaigns_collection.find({"volunteer_id": user_id})
     async for document in cursor:
+        document["_id"] = str(document["_id"])
         campaigns.append(Campaign(**document))
     return campaigns
 
@@ -65,6 +69,7 @@ async def get_user_donations(user_email: str):
         "status": "success"
     })
     async for document in cursor:
+        document["_id"] = str(document["_id"])
         transactions.append(Transaction(**document))
     return transactions
 
@@ -130,6 +135,7 @@ async def get_all_campaigns(limit: int = 6):
     cursor = campaigns_collection.find({"status": "active"}).limit(limit)
     
     async for document in cursor:
+        document["_id"] = str(document["_id"])
         campaigns.append(Campaign(**document))
         
     return campaigns
