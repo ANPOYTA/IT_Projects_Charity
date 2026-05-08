@@ -12,6 +12,10 @@ class User(BaseModel):
     avatar_url: Optional[str] = None
     created_at: datetime = datetime.now()
 
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
 class Campaign(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
     volunteer_id: str
@@ -20,6 +24,7 @@ class Campaign(BaseModel):
     goal_amount: float
     current_amount: float = 0.0
     currency: str = "UAH"
+    payment_url: str
     status: str = "active"
     image_url: Optional[str] = None
     created_at: datetime = datetime.now()
