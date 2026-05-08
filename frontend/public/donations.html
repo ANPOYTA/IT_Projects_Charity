@@ -51,7 +51,7 @@
             const grid = document.getElementById('all-campaigns-grid');
 
             try {
-                const response = await fetch('/api/campaigns');
+                const response = await fetch('http://127.0.0.1:8000/campaigns/');
 
                 if (!response.ok) throw new Error('Помилка мережі');
 
@@ -83,7 +83,7 @@
                                         <div class="progress-fill" style="width: 0%;" data-target="${percent}%"></div>
                                     </div>
                                 </div>
-                                <a href="${campaign.payment_link || '#'}" target="_blank" class="btn btn-primary btn-full">Задонатити</a>
+                              <a href="${campaign.payment_url || '#'}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full">Задонатити</a>
                             </div>
                         </div>
                     `;

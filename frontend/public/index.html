@@ -24,13 +24,13 @@
             <a href="login.html" class="btn btn-primary">Sign In &rarr;</a>
         </div>
     </header>
-    
+
     <section class="hero">
         <div class="hero-left">
             <h1>Разом — платформа<br>добрих справ</h1>
             <p>Допомагати стало простіше.<br>Створюйте збори, підтримуйте волонтерські ініціативи та об’єднуйте людей
                 навколо важливих цілей.</p>
-    
+
             <div class="stats-shape">
                 <div class="stat-item">
                     <h3>145+</h3>
@@ -46,7 +46,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="hero-right">
             <div class="card big-card">
                 <div class="card-image-wrapper">
@@ -58,7 +58,8 @@
                         <span class="author-name">s_sternenko ✓</span>
                     </div>
                     <h3>Поточний RUSORIZ</h3>
-                    <p class="description">Постійна банка для закупівлі FPV. Наша мета — купувати мінімум 300 дронів на день
+                    <p class="description">Постійна банка для закупівлі FPV. Наша мета — купувати мінімум 300 дронів на
+                        день
                         та швидко передавати на фронт!</p>
                     <div class="progress-container">
                         <div class="progress-labels">
@@ -69,10 +70,11 @@
                             <div class="progress-fill" data-target="26%"></div>
                         </div>
                     </div>
-                    <a href="https://send.monobank.ua/jar/2JbpBYkhMv?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGn4eOdLjkvxUuBUbzm1BHJlhGBxrEr1eFqAl2uYwSyXSXGmxqVHQppQiGuSms_aem_38VHq7GGmPe1m0nXVLl8tw" class="btn btn-primary btn-full">Задонатити</a>
+                    <a href="https://send.monobank.ua/jar/2JbpBYkhMv?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGn4eOdLjkvxUuBUbzm1BHJlhGBxrEr1eFqAl2uYwSyXSXGmxqVHQppQiGuSms_aem_38VHq7GGmPe1m0nXVLl8tw"
+                        target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full">Задонатити</a>
                 </div>
             </div>
-    
+
             <div class="card small-card">
                 <div class="card-image-wrapper">
                     <img src="images/photo2.jpg" alt="Фото збору" class="card-image">
@@ -94,7 +96,8 @@
                             <div class="progress-fill" data-target="2%"></div>
                         </div>
                     </div>
-                    <a href="https://send.monobank.ua/jar/46hiejazRM?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnBPklDjt9HoJ5phkn1q3WyIoP47DBwvCyNc8OuS-QwToCMORKKOLkHWIfkN4_aem_32W2b5EDDLK-R93AH7Hvmg" class="btn btn-primary btn-full">Задонатити</a>
+                    <a href="https://send.monobank.ua/jar/46hiejazRM?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnBPklDjt9HoJ5phkn1q3WyIoP47DBwvCyNc8OuS-QwToCMORKKOLkHWIfkN4_aem_32W2b5EDDLK-R93AH7Hvmg"
+                        target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full">Задонатити</a>
                 </div>
             </div>
         </div>
@@ -126,9 +129,10 @@
     <section id="donations" class="donations">
         <div class="donations-header">
             <h2>Актуальні збори</h2>
-            <a href="donations.html" class="view-more">Показати більше <img src="images/arrow-right.svg" alt="Стрілка"></a>
+            <a href="donations.html" class="view-more">Показати більше <img src="images/arrow-right.svg"
+                    alt="Стрілка"></a>
         </div>
-    
+
         <div class="donations-grid" id="recent-campaigns-grid">
             <p>Завантаження останніх зборів...</p>
         </div>
@@ -150,7 +154,7 @@
             const grid = document.getElementById('recent-campaigns-grid');
 
             try {
-                const response = await fetch('/api/campaigns');
+                const response = await fetch('http://127.0.0.1:8000/campaigns/');
 
                 if (!response.ok) throw new Error('Помилка мережі');
 
@@ -185,7 +189,7 @@
                                             <div class="progress-fill" style="width: 0%;" data-target="${percent}%"></div>
                                         </div>
                                     </div>
-                                    <a href="${campaign.payment_link || '#'}" target="_blank" class="btn btn-primary btn-full">Задонатити</a>
+                                    <a href="${campaign.payment_url || '#'}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full">Задонатити</a>
                                 </div>
                             </div>
                         `;
