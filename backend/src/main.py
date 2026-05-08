@@ -1,8 +1,11 @@
+import os
+from fastapi import FastAPI, HTTPException, status, UploadFile, File
+from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from bson import ObjectId
 from database import users_collection, campaigns_collection, transactions_collection
-from models import User, Campaign, Transaction
+from models import User, Campaign, Transaction, LoginRequest
 from typing import List
 from passlib.context import CryptContext
 
@@ -16,6 +19,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+os.makedirs("static/avatars", exist_ok=True)
+os.makedirs("static/verification", exist_ok=True)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -60,6 +68,32 @@ async def get_user_donations(user_email: str):
         transactions.append(Transaction(**document))
     return transactions
 
+# Аватар користувача
+@app.post("/users/{user_id}/avatar")
+async def upload_avatar(user_id: str, file: UploadFile = File(...)):
+    user = await users_collection.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=404, detail="Користувача не знайдено")
+
+    file_extension = file.filename.split(".")[-1]
+    filename = f"{user_id}_avatar.{file_extension}"
+    file_path = f"static/avatars/{filename}"
+
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    avatar_url = f"http://127.0.0.1:8000/static/avatars/{filename}"
+
+    await users_collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"avatar_url": avatar_url}}
+    )
+
+    return {
+        "message": "Аватар успішно завантажено!", 
+        "avatar_url": avatar_url
+    }
+
 #ЗБОРИ
 
 # Створення нового збору
@@ -103,25 +137,103 @@ async def get_all_campaigns(limit: int = 6):
 # Процес донату
 @app.post("/donate/")
 async def create_donation(transaction: Transaction):
+    campaign = await campaigns_collection.find_one({"_id": ObjectId(transaction.campaign_id)})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Збір не знайдено")
+
     transaction_dict = transaction.model_dump(by_alias=True, exclude={"id"})
     new_transaction = await transactions_collection.insert_one(transaction_dict)
-    fake_payment_url = f"https://api.monobank.ua/checkout/pay/{new_transaction.inserted_id}"
     
     return {
         "message": "Транзакцію ініційовано. Перейдіть за посиланням для оплати.",
         "transaction_id": str(new_transaction.inserted_id),
-        "payment_url": fake_payment_url,
+        "payment_url": campaign.get("payment_url"),
         "status": "pending"
     }
 
 #ВЕРИФІКАЦІЯ ТА УПРАВЛІННЯ
 
+# Логін користувача
+@app.post("/login/")
+async def login(credentials: LoginRequest):
+    user = await users_collection.find_one({"email": credentials.email})
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Невірна пошта або пароль"
+        )
+
+    is_password_correct = pwd_context.verify(credentials.password, user["hashed_password"])
+    
+    if not is_password_correct:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Невірна пошта або пароль"
+        )
+
+    return {
+        "message": "Вхід успішний!",
+        "user_id": str(user["_id"]),
+        "full_name": user["full_name"],
+        "role": user["role"],
+        "avatar_url": user.get("avatar_url")
+    }
+
 # Верифікація волонтера
+@app.post("/users/{user_id}/verify-documents")
+async def verify_documents(
+    user_id: str, 
+    front_side: UploadFile = File(...), 
+    back_side: UploadFile = File(...), 
+    selfie: UploadFile = File(...)
+):
+    user = await users_collection.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=404, detail="Користувача не знайдено")
+
+    user_docs_path = f"static/verification/{user_id}"
+    os.makedirs(user_docs_path, exist_ok=True)
+
+    docs = {
+        "front": front_side,
+        "back": back_side,
+        "selfie": selfie
+    }
+    
+    saved_paths = {}
+
+    for key, file in docs.items():
+        file_extension = file.filename.split(".")[-1]
+        filename = f"{key}.{file_extension}"
+        full_path = f"{user_docs_path}/{filename}"
+        
+        with open(full_path, "wb") as buffer:
+            buffer.write(await file.read())
+        
+        saved_paths[f"{key}_url"] = f"http://127.0.0.1:8000/{full_path}"
+
+    await users_collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {
+            "$set": {
+                "verification_status": "pending",
+                "document_urls": saved_paths
+            }
+        }
+    )
+
+    return {
+        "message": "Документи надіслано на перевірку. Статус оновлено на 'pending'.",
+        "files": saved_paths
+    }
+
+# Верифікація волонтера(2)
 @app.put("/users/{user_id}/verify")
 async def verify_user(user_id: str):
     result = await users_collection.update_one(
         {"_id": ObjectId(user_id)},
-        {"$set": {"is_verified": True}}
+        {"$set": {"verification_status": "verified"}}
     )
     
     if result.modified_count == 1:
