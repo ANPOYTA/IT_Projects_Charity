@@ -18,7 +18,7 @@
             <div class="auth-form-container">
                 <h1>Реєстрація</h1>
 
-                <form action="#" method="POST" style="margin-top: 30px;">
+                <form id="signup-form" style="margin-top: 30px;">
                     <div class="form-group">
                         <label for="name">Ім'я</label>
                         <input type="text" id="name" placeholder="Введіть ваше ім'я" required>
@@ -106,6 +106,44 @@
             google.accounts.id.prompt(); 
         });
     };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const signupForm = document.getElementById('signup-form');
+
+        signupForm.addEventListener('submit', async (event) => {
+          event.preventDefault(); // Зупиняємо стандартне відправлення форми (захист від 405)
+
+        // Збираємо дані прямо з полів (точно за назвами твоєї нової моделі UserRegisterRequest)
+          const payload = {
+              name: document.getElementById('name').value.trim(),
+               surname: document.getElementById('surname').value.trim(),
+               phone: document.getElementById('phone').value.trim(),
+               email: document.getElementById('email').value.trim(),
+               password: document.getElementById('password').value
+            };
+
+           try {
+               const response = await fetch('http://127.0.0.1:8000/users/', {
+                    method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+               });
+
+                if (response.ok) {
+                    alert("Реєстрація успішна! Тепер увійдіть.");
+                    window.location.href = 'login.html';
+                } else {
+                    const errorData = await response.json();
+                    alert("Помилка: " + (errorData.detail || "Не вдалося зареєструватися"));
+                }
+            } catch (error) {
+                console.error("Сервер не відповідає:", error);
+                alert("Помилка з'єднання з сервером.");
+            }
+        });
+    });
 </script>
 
 </html>
