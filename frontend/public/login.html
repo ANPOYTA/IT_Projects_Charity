@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вхід — Разом</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript"
+        src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+    <div class="auth-page">
+        <div class="auth-left">
+            <div class="auth-form-container">
+                <h1>З поверненням!</h1>
+                <p class="auth-subtitle">Введіть ваші дані щоб увійти</p>
+
+                <form action="#" method="POST">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Введіть ваш email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="password">Пароль</label>
+                        </div>
+                        <input type="password" id="password" placeholder="Введіть ваш пароль" required>
+                    </div>
+
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Запам'ятати мене</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">Увійти</button>
+                </form>
+
+                <div class="auth-divider">
+                    <span>Або</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" id="google-btn" class="btn-social">
+                        <img src="images/google.svg" alt="Google"> Sign in with Google
+                    </button>
+                    <button type="button" id="appleid-signin" class="btn-social">
+                        <img src="images/apple.svg" alt="Apple"> Sign in with Apple
+                    </button>
+                </div>
+
+                <p class="auth-footer">
+                    Не маєте акаунту? <a href="signup.html">Зареєструватись</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="auth-right">
+        </div>
+    </div>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</body>
+
+<script>
+    // Функція, яка спрацює, коли Google успішно підтвердить користувача
+    function handleGoogleResponse(response) {
+        // response.credential - це токен від Google. Його треба відправити бекендеру!
+        console.log("Токен від Google отримано!", response.credential);
+
+        // Відправляємо токен на ваш бекенд
+        fetch('http://ТВІЙ_БЕКЕНД/api/auth/google', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token: response.credential })
+        })
+            .then(res => res.json())
+            .then(data => {
+                // Тут бекенд має повернути ваш JWT токен 
+                console.log("Успішний вхід!", data);
+                // Зберігаємо токен і перекидаємо користувача в особистий кабінет
+                localStorage.setItem('jwt_token', data.access_token);
+                window.location.href = 'profile.html';
+            })
+            .catch(error => console.error('Помилка авторизації на бекенді:', error));
+    }
+
+    // Ініціалізація Google бібліотеки при завантаженні сторінки
+    window.onload = function () {
+        google.accounts.id.initialize({
+            client_id: "ТЮДИ_ВСТАВИТИ_CLIENT_ID_ВІД_БЕКЕНДЕРА.apps.googleusercontent.com",
+            callback: handleGoogleResponse
+        });
+
+        // Прив'язуємо клік по твоїй кнопці до виклику вікна Google
+        const googleButton = document.getElementById('google-btn');
+        googleButton.addEventListener('click', () => {
+            google.accounts.id.prompt(); // Викликає спливаюче вікно One Tap
+        });
+    };
+</script>
+
+</html>

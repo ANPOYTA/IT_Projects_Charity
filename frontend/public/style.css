@@ -405,3 +405,209 @@ html {
     color: var(--text-gray);
     font-size: 14px;
 }
+
+/* =========================================
+   СТОРІНКИ АВТОРИЗАЦІЇ (Login / Sign Up)
+========================================= */
+
+.auth-page {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+}
+
+/* Ліва частина з формою */
+.auth-left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.auth-form-container {
+    width: 100%;
+    max-width: 420px;
+    /* Ширина блоку з формою */
+}
+
+.auth-form-container h1 {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.auth-subtitle {
+    color: var(--text-dark);
+    font-size: 16px;
+    margin-bottom: 32px;
+}
+
+/* Стилі інпутів */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-password {
+    font-size: 12px;
+    color: #1a42db;
+    /* Синій колір, як на макеті */
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid #EAEAEA;
+    background-color: transparent;
+    font-size: 14px;
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--green-color);
+}
+
+/* Чекбокс */
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.form-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--green-color);
+    /* Робить чекбокс зеленим при кліку */
+}
+
+.form-checkbox label {
+    font-size: 12px;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+/* Розділювач "Або" */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 30px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #EAEAEA;
+}
+
+.auth-divider span {
+    padding: 0 15px;
+    color: var(--text-dark);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Соціальні кнопки */
+.social-login {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.btn-social {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid #EAEAEA;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-social:hover {
+    background: #f0ece1;
+}
+
+.btn-social img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Футер форми (перемикання між login/signup) */
+.auth-footer {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.auth-footer a {
+    color: #1a42db;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Права частина з зеленим фоном та логотипом */
+.auth-right {
+    flex: 1;
+    /* Займає 50% екрану */
+    background-color: var(--green-color);
+    border-radius: 40px 0 0 40px;
+    /* Заокруглюємо ліві кути, як на макеті */
+
+    /* Додаємо твій викачаний SVG фон */
+    background-image: url('images/sign_in_up_background.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 80%;
+    /* Регулюй цей відсоток, щоб логотип ідеально вписався */
+
+    /* На мобільних екранах правий блок ховаємо */
+}
+
+@media (max-width: 900px) {
+    .auth-right {
+        display: none;
+    }
+
+    .auth-left {
+        padding: 20px;
+    }
+}
