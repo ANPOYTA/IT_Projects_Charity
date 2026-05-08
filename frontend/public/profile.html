@@ -25,6 +25,7 @@
             <div class="header-user-text">
                 <span class="header-user-name" id="profile-name">Завантаження...</span>
                 <span class="header-user-email" id="profile-email">...</span>
+                
             </div>
         
             <div class="user-menu-container" id="user-menu-container">
@@ -33,45 +34,39 @@
                         <img src="images/user.svg" alt="Користувач" class="header-avatar">
                     </div>
                 </button>
-        
-                <div class="user-dropdown hidden" id="user-dropdown">
-                    <a href="profile.html" class="dropdown-item">Мій профіль</a>
-                    <button class="dropdown-item" id="logout-btn">Вийти</button>
-                </div>
+            </div>
+            <div class="auth-actions" style="display: flex; gap: 10px; margin-left: 15px;">
+                    <a href="profile.html" class="btn-link">Профіль</a>
+                    <button id="logout-btn" class="btn-logout">Вийти</button>
             </div>
         </div>
     </header>
 
-    <main class="profile-page" style="min-height: 70vh; padding: 40px 5%;">
-
+        <main class="profile-page">
         <div class="profile-tabs">
             <button class="tab-btn active" id="btn-donations" onclick="switchTab('donations')">Мої донати</button>
             <button class="tab-btn" id="btn-campaigns" onclick="switchTab('campaigns')">Мої збори</button>
         </div>
 
         <div id="tab-donations" class="tab-content active">
-            <div class="donations-grid" id="my-donations-grid">
+            <div id="my-donations-grid">
                 <p class="empty-message">Тут будуть відображатися збори, які ви підтримали.</p>
             </div>
         </div>
 
         <div id="tab-campaigns" class="tab-content hidden">
-
-            <div id="unverified-view" class="unverified-container hidden">
+            <div id="unverified-view" class="unverified-container">
                 <p>Щоб розмістити свій збір, необхідно верифікувати особу</p>
-                <a href="verification.html" class="btn btn-large-green">Пройти верифікацію</a>
+                <a href="verification.html" class="btn-large-green">Пройти верифікацію</a>
             </div>
 
             <div id="verified-view" class="verified-container hidden">
-                <div class="donations-grid" id="my-campaigns-grid">
-                </div>
-                <div style="text-align: center; margin-top: 40px;">
-                    <a href="create-campaign.html" class="btn btn-large-green">Розмістити збір</a>
+                <div id="my-campaigns-grid"></div>
+                <div style="margin-top: 30px;">
+                    <a href="create-campaign.html" class="btn-large-green">Розмістити збір</a>
                 </div>
             </div>
-
         </div>
-
     </main>
 
     <footer class="footer">
@@ -140,6 +135,18 @@
                 // Підставляємо дані в шапку
                 document.getElementById('profile-name').textContent = user.full_name;
                 document.getElementById('profile-email').textContent = user.email;
+
+                const userAvatarImg = document.querySelector('.header-avatar');
+                if (userAvatarImg) {
+                // Якщо в базі є avatar_url — беремо його, інакше ставимо заглушку
+                    const defaultAvatar = 'images/user.svg'; 
+                    userAvatarImg.src = user.avatar_url ? user.avatar_url : defaultAvatar;
+            
+                    // Додатковий захист: якщо посилання в базі бите, покажемо заглушку
+                    userAvatarImg.onerror = function() {
+                        this.src = defaultAvatar;
+                    };
+                }
 
                 // Перевірка верифікації для вкладки "Мої збори"
                 if (user.verification_status === 'verified') {
@@ -238,6 +245,7 @@
             }, 100);
         }
     </script>
+    
 </body>
 
 </html>
