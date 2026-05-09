@@ -1074,3 +1074,93 @@ html {
 .user-dropdown.hidden {
     display: none;
 }
+
+@media (max-width: 768px) {
+    .header {
+        flex-wrap: wrap;
+        padding: 15px;
+    }
+
+    .menu {
+        order: 3;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .auth {
+        order: 2;
+    }
+
+    .hero {
+        flex-direction: column;
+        padding: 30px 15px;
+        text-align: center;
+    }
+
+    .hero-left, .hero-right {
+        width: 100%;
+    }
+
+    .stats-shape {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .hero-right {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .big-card, .small-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .donations-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .donations-grid {
+        grid-template-columns: 1fr;
+        padding: 0 10px;
+    }
+
+    .footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 28px;
+        line-height: 1.2;
+    }
+
+    .stats-shape {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .menu {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+}
