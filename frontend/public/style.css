@@ -1002,7 +1002,6 @@ html {
     margin-bottom: 30px;
 }
 
-/* Стилі для полів вводу */
 .form-group {
     margin-bottom: 20px;
 }
@@ -1033,4 +1032,46 @@ html {
     padding: 16px;
     font-size: 18px;
     margin-top: 10px;
+}
+
+.user-icon-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-icon-btn img,
+.header-avatar {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: transparent;
+}
+
+.user-menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: #FFFFFF;
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+    min-width: 150px;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.user-dropdown.hidden {
+    display: none;
 }

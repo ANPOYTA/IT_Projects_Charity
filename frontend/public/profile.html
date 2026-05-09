@@ -25,19 +25,17 @@
             <div class="header-user-text">
                 <span class="header-user-name" id="profile-name">Завантаження...</span>
                 <span class="header-user-email" id="profile-email">...</span>
-                
             </div>
         
             <div class="user-menu-container" id="user-menu-container">
                 <button class="user-icon-btn" id="user-icon-btn">
-                    <div class="header-avatar-wrapper">
-                        <img src="images/user.svg" alt="Користувач" class="header-avatar">
-                    </div>
+                    <img src="images/user.svg" alt="Профіль" class="header-avatar">
                 </button>
-            </div>
-            <div class="auth-actions" style="display: flex; gap: 10px; margin-left: 15px;">
-                    <a href="profile.html" class="btn-link">Профіль</a>
-                    <button id="logout-btn" class="btn-logout">Вийти</button>
+        
+                <div class="user-dropdown hidden" id="user-dropdown">
+                    <a href="profile.html" class="dropdown-item">Мій профіль</a>
+                    <button class="dropdown-item" id="logout-btn" style="width: 100%; text-align: left;">Вийти</button>
+                </div>
             </div>
         </div>
     </header>
