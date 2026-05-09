@@ -36,12 +36,25 @@ async def root():
 # Отримати дані поточного користувача для профілю
 @app.get("/users/me")
 async def get_current_user(authorization: str = Header(None)):
+    # 1. Перевіряємо, чи взагалі прийшов заголовок
     if not authorization:
-        raise HTTPException(status_code=401, detail="Токен відсутній")
-    user_id = authorization.replace("Bearer ", "")
-    user = await users_collection.find_one({"_id": ObjectId(user_id)})
-    user["_id"] = str(user["_id"])
-    return user
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Токен відсутній. Будь ласка, залогіньтесь."
+        )
+    
+    # 2. Тільки якщо він є, робимо replace
+    try:
+        user_id = authorization.replace("Bearer ", "")
+        user = await users_collection.find_one({"_id": ObjectId(user_id)})
+        
+        if not user:
+            raise HTTPException(status_code=404, detail="Користувача не знайдено")
+            
+        user["_id"] = str(user["_id"])
+        return user
+    except Exception:
+        raise HTTPException(status_code=401, detail="Невалідний токен")
 
 # Створити користувача
 @app.post("/users/")
