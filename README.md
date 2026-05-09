@@ -15,8 +15,8 @@
 ## 🛠 Технологічний стек
 
 - **Frontend:** HTML, CSS (Figma layout), JavaScript.
-- **Backend:** Node.js / Python (в процесі).
-- **База даних:** SQL-дампи знаходяться в `/backend/database/`.
+- **Backend:**  Python.
+- **База даних:** MongoDB.
 
 ---
 

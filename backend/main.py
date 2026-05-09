@@ -15,7 +15,7 @@ app = FastAPI(title="Вебплатформа для зборів API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -37,16 +37,26 @@ async def root():
 @app.get("/users/me")
 async def get_current_user(authorization: str = Header(None)):
     if not authorization:
-        raise HTTPException(status_code=401, detail="Токен відсутній")
-    user_id = authorization.replace("Bearer ", "")
-    user = await users_collection.find_one({"_id": ObjectId(user_id)})
-    user["_id"] = str(user["_id"])
-    return user
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Токен відсутній. Будь ласка, залогіньтесь."
+        )
+    
+    try:
+        user_id = authorization.replace("Bearer ", "")
+        user = await users_collection.find_one({"_id": ObjectId(user_id)})
+        
+        if not user:
+            raise HTTPException(status_code=404, detail="Користувача не знайдено")
+            
+        user["_id"] = str(user["_id"])
+        return user
+    except Exception:
+        raise HTTPException(status_code=401, detail="Невалідний токен")
 
 # Створити користувача
 @app.post("/users/")
 async def create_user(request: UserRegisterRequest):
-    # Додатковий бонус: перевіряємо, чи немає вже такого email в базі
     existing_user = await users_collection.find_one({"email": request.email})
     if existing_user:
         raise HTTPException(
@@ -54,13 +64,9 @@ async def create_user(request: UserRegisterRequest):
             detail="Користувач з таким email вже існує"
         )
 
-    # 1. Бекенд сам склеює ім'я
     full_name = f"{request.name} {request.surname}"
-    
-    # 2. Бекенд сам хешує пароль
     hashed_pw = pwd_context.hash(request.password)
     
-    # 3. Формуємо правильний словник для бази даних
     user_dict = {
         "email": request.email,
         "hashed_password": hashed_pw,
@@ -70,7 +76,6 @@ async def create_user(request: UserRegisterRequest):
         "verification_status": "unverified"
     }
     
-    # 4. Зберігаємо в MongoDB Atlas
     new_user = await users_collection.insert_one(user_dict)
     
     return {
@@ -78,16 +83,22 @@ async def create_user(request: UserRegisterRequest):
         "user_id": str(new_user.inserted_id)
     }
 
-# 2. Мої збори (щоб зник напис про верифікацію або з'явилися картки)
+# Мої збори 
 @app.get("/users/me/campaigns")
 async def get_my_campaigns(authorization: str = Header(None)):
-    user_id = authorization.replace("Bearer ", "")
-    campaigns = []
-    cursor = campaigns_collection.find({"volunteer_id": user_id})
-    async for document in cursor:
-        document["_id"] = str(document["_id"])
-        campaigns.append(document)
-    return campaigns
+    if not authorization:
+        return []
+    
+    try:
+        user_id = authorization.replace("Bearer ", "")
+        campaigns = []
+        cursor = campaigns_collection.find({"volunteer_id": user_id})
+        async for document in cursor:
+            document["_id"] = str(document["_id"])
+            campaigns.append(document)
+        return campaigns
+    except Exception:
+        return []
 
 @app.get("/users/me/donations")
 async def get_my_donations(authorization: str = Header(None)):
@@ -155,55 +166,36 @@ async def create_campaign(
     authorization: str = Header(None)
 ):
     if not authorization:
-        raise HTTPException(status_code=401, detail="Токен відсутній")
+        raise HTTPException(status_code=401, detail="Ви повинні увійти в систему")
     
-    # Витягуємо ID волонтера
-    volunteer_id = authorization.replace("Bearer ", "")
-    
-    # Перевіряємо користувача в базі
-    user = await users_collection.find_one({"_id": ObjectId(volunteer_id)})
-    if not user:
-        raise HTTPException(status_code=404, detail="Користувача не знайдено")
+    try:
+        volunteer_id = authorization.replace("Bearer ", "")
         
-    # ВАЖЛИВО: Тільки верифіковані волонтери можуть створювати збори
-    if user.get("verification_status") != "verified":
-        raise HTTPException(
-            status_code=403, 
-            detail="Щоб розмістити збір, пройдіть верифікацію у профілі"
-        )
+        file_path = ""
+        if image:
+            file_extension = image.filename.split(".")[-1]
+            filename = f"{ObjectId()}.{file_extension}"
+            file_path = f"static/campaigns/{filename}"
+            os.makedirs("static/campaigns", exist_ok=True)
+            with open(file_path, "wb") as f:
+                f.write(await image.read())
 
-    # Логіка збереження картинки
-    image_url = "http://127.0.0.1:8000/static/default-campaign.jpg" # Заглушка
-    if image:
-        # Створюємо папку, якщо її немає
-        os.makedirs("static/campaigns", exist_ok=True)
+        campaign_data = {
+            "title": title,
+            "description": description,
+            "goal_amount": goal_amount,
+            "current_amount": 0.0,
+            "payment_url": payment_url,
+            "image_url": f"/{file_path}" if file_path else "",
+            "volunteer_id": volunteer_id,
+            "status": "open",
+            "created_at": datetime.utcnow()
+        }
         
-        file_extension = image.filename.split(".")[-1]
-        filename = f"{ObjectId()}_{image.filename}" # Унікальне ім'я файлу
-        file_path = f"static/campaigns/{filename}"
-
-        with open(file_path, "wb") as buffer:
-            buffer.write(await image.read())
-        
-        image_url = f"/{file_path}"
-
-    # Створюємо документ для MongoDB
-    new_campaign = {
-        "volunteer_id": volunteer_id,
-        "title": title,
-        "description": description,
-        "goal_amount": goal_amount,
-        "current_amount": 0.0,
-        "payment_url": payment_url,
-        "image_url": image_url,
-        "status": "active",
-        "author_name": user.get("full_name"),
-        "is_author_verified": True,
-        "created_at": datetime.now() # Не забудь імпортувати datetime
-    }
-
-    result = await campaigns_collection.insert_one(new_campaign)
-    return {"message": "Збір створено!", "id": str(result.inserted_id)}
+        result = await campaigns_collection.insert_one(campaign_data)
+        return {"id": str(result.inserted_id)}
+    except Exception:
+        raise HTTPException(status_code=400, detail="Помилка при створенні збору")
 
 # Отримання списку всіх зборів на головному екрані
 @app.get("/campaigns/", response_model=List[Campaign])
@@ -326,49 +318,35 @@ async def verify_user(user_id: str):
 # Новий ендпоінт для верифікації
 @app.post("/users/verify")
 async def process_verification(
-    passport_id: str = Form(...),
-    photo_front: UploadFile = File(...),
-    photo_back: UploadFile = File(...),
-    photo_selfie: UploadFile = File(...),
+    file1: UploadFile = File(...),
+    file2: UploadFile = File(...),
+    file3: UploadFile = File(...),
     authorization: str = Header(None)
 ):
     if not authorization:
-        raise HTTPException(status_code=401, detail="Токен відсутній")
+        raise HTTPException(status_code=401, detail="Авторизація обов'язкова")
     
-    user_id = authorization.replace("Bearer ", "")
+    try:
+        user_id = authorization.replace("Bearer ", "")
+        files = {"passport_front": file1, "passport_back": file2, "selfie": file3}
+        saved_urls = {}
+
+        for key, file in files.items():
+            file_extension = file.filename.split(".")[-1]
+            filename = f"{user_id}_{key}.{file_extension}"
+            path = f"static/verification/{filename}"
+            with open(path, "wb") as f:
+                f.write(await file.read())
+            saved_urls[f"{key}_url"] = f"/{path}"
+
+        await users_collection.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {"verification": saved_urls, "is_verified": "pending"}}
+        )
+        return {"message": "Документи надіслано на перевірку"}
+    except Exception:
+        raise HTTPException(status_code=400, detail="Помилка обробки документів")
     
-    # Створюємо папку для документів користувача
-    user_docs_path = f"static/verification/{user_id}"
-    os.makedirs(user_docs_path, exist_ok=True)
-
-    # Зберігаємо файли
-    file_map = {
-        "front": photo_front,
-        "back": photo_back,
-        "selfie": photo_selfie
-    }
-    
-    saved_urls = {}
-    for key, file in file_map.items():
-        ext = file.filename.split(".")[-1]
-        path = f"{user_docs_path}/{key}.{ext}"
-        with open(path, "wb") as buffer:
-            buffer.write(await file.read())
-        saved_urls[f"{key}_url"] = f"/{path}"
-
-    # Оновлюємо статус в базі Atlas
-    await users_collection.update_one(
-        {"_id": ObjectId(user_id)},
-        {
-            "$set": {
-                "verification_status": "pending",
-                "passport_id": passport_id,
-                "document_urls": saved_urls
-            }
-        }
-    )
-
-    return {"message": "Документи отримано"}
 # Закриття збору
 @app.put("/campaigns/{campaign_id}/close")
 async def close_campaign(campaign_id: str):
