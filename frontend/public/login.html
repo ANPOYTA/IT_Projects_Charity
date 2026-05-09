@@ -101,13 +101,13 @@
         const loginForm = document.getElementById('login-form');
 
         loginForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Захист від помилки 405 (блокує перезавантаження)
+            event.preventDefault(); 
 
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('https://charity-backend-aiyz.onrender.com', {
+                const response = await fetch('https://charity-backend-aiyz.onrender.com/login/', {
                     method: 'POST',
                    headers: {
                        'Content-Type': 'application/json'
@@ -117,7 +117,6 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                 // Зберігаємо ID або токен для доступу до профілю
                  localStorage.setItem('jwt_token', data.user_id); 
                  alert("Вхід успішний!");
                  window.location.href = 'profile.html';

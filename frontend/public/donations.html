@@ -64,7 +64,7 @@
             const grid = document.getElementById('all-campaigns-grid');
 
             try {
-                const response = await fetch('https://charity-backend-aiyz.onrender.com');
+                const response = await fetch('https://charity-backend-aiyz.onrender.com/campaigns/');
 
                 if (!response.ok) throw new Error('Помилка мережі');
 
