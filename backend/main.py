@@ -36,6 +36,8 @@ async def root():
 # Отримати дані поточного користувача для профілю
 @app.get("/users/me")
 async def get_current_user(authorization: str = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Токен відсутній")
     user_id = authorization.replace("Bearer ", "")
     user = await users_collection.find_one({"_id": ObjectId(user_id)})
     user["_id"] = str(user["_id"])
