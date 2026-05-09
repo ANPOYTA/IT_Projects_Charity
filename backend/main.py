@@ -131,7 +131,7 @@ async def upload_avatar(user_id: str, file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
 
-    avatar_url = f"http://127.0.0.1:8000/static/avatars/{filename}"
+    avatar_url = f"/static/avatars/{filename}"
 
     await users_collection.update_one(
         {"_id": ObjectId(user_id)},
@@ -186,7 +186,7 @@ async def create_campaign(
         with open(file_path, "wb") as buffer:
             buffer.write(await image.read())
         
-        image_url = f"http://127.0.0.1:8000/{file_path}"
+        image_url = f"/{file_path}"
 
     # Створюємо документ для MongoDB
     new_campaign = {
@@ -355,7 +355,7 @@ async def process_verification(
         path = f"{user_docs_path}/{key}.{ext}"
         with open(path, "wb") as buffer:
             buffer.write(await file.read())
-        saved_urls[f"{key}_url"] = f"http://127.0.0.1:8000/{path}"
+        saved_urls[f"{key}_url"] = f"/{path}"
 
     # Оновлюємо статус в базі Atlas
     await users_collection.update_one(
