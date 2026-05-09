@@ -99,16 +99,14 @@
     </main>
 
     <script>
-        const API_URL = 'https://charity-backend-aiyz.onrender.com'; // Адреса твого бекенда
+        const API_URL = 'https://charity-backend-aiyz.onrender.com'; 
 
-        // Перевіряємо, чи юзер залогінений
         document.addEventListener("DOMContentLoaded", () => {
             if (!localStorage.getItem('jwt_token')) {
                 window.location.href = 'login.html';
             }
         });
 
-        // Функція для відображення імені вибраного файлу
         function updateFileName(input, textId) {
             const display = document.getElementById(textId);
             if (input.files && input.files[0]) {
@@ -118,16 +116,14 @@
             }
         }
 
-        // Перехід між кроками + ВАЛІДАЦІЯ
         function nextStep(currentStep) {
-            // Перевірка 1-го кроку
             if (currentStep === 1) {
                 const passportId = document.getElementById('passport-id').value.trim();
                 const file1 = document.getElementById('file-1').files.length;
 
                 if (!passportId) {
                     alert('Будь ласка, введіть ID паспорта.');
-                    return; // Зупиняємо функцію, далі не йдемо
+                    return; 
                 }
                 if (file1 === 0) {
                     alert('Будь ласка, завантажте фото передньої частини паспорта.');
@@ -135,7 +131,6 @@
                 }
             }
 
-            // Перевірка 2-го кроку
             if (currentStep === 2) {
                 const file2 = document.getElementById('file-2').files.length;
                 if (file2 === 0) {
@@ -144,24 +139,20 @@
                 }
             }
 
-            // Якщо все ок — міняємо екрани
             document.getElementById(`step-${currentStep}`).classList.add('hidden');
             document.getElementById(`step-${currentStep + 1}`).classList.remove('hidden');
 
-            // Оновлюємо прогрес-бар
             const currentCircle = document.getElementById(`circle-${currentStep}`);
-            currentCircle.innerHTML = '✔'; // Ставимо галочку
+            currentCircle.innerHTML = '✔'; 
 
             const nextLine = document.getElementById(`line-${currentStep}`);
-            nextLine.classList.add('active'); // Зафарбовуємо лінію
+            nextLine.classList.add('active'); 
 
             const nextCircle = document.getElementById(`circle-${currentStep + 1}`);
-            nextCircle.classList.add('active'); // Робимо наступний кружечок зеленим
+            nextCircle.classList.add('active');
         }
 
-        // Фініш верифікації та ВІДПРАВКА НА БЕКЕНД
         async function finishVerification() {
-            // Перевірка 3-го кроку
             const file3 = document.getElementById('file-3').files;
             if (file3.length === 0) {
                 alert('Будь ласка, завантажте ваше фото з паспортом.');
@@ -170,32 +161,27 @@
 
             const token = localStorage.getItem('jwt_token');
 
-            // Пакуємо всі дані у FormData (бо ми шлемо файли)
             const formData = new FormData();
             formData.append('passport_id', document.getElementById('passport-id').value.trim());
             formData.append('photo_front', document.getElementById('file-1').files[0]);
             formData.append('photo_back', document.getElementById('file-2').files[0]);
             formData.append('photo_selfie', document.getElementById('file-3').files[0]);
 
-            // Для краси: можемо змінити текст на кнопці, поки йде завантаження
             const btn = document.querySelector('#step-3 .btn-black');
             const originalText = btn.textContent;
             btn.textContent = 'Відправка...';
             btn.disabled = true;
 
             try {
-                // Відправляємо на бекенд (узгодь точну адресу ендпоінту з бекендером, наприклад /users/verify)
                 const response = await fetch(`${API_URL}/users/verify`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
-                        // З FormData заголовок 'Content-Type' браузер ставить автоматично!
                     },
                     body: formData
                 });
 
                 if (response.ok) {
-                    // Якщо бекенд сказав "ОК", показуємо фінальний екран
                     document.getElementById('verification-form-box').classList.add('hidden');
                     document.querySelector('.verification-header').classList.add('hidden');
                     document.getElementById('step-success').classList.remove('hidden');
@@ -211,6 +197,7 @@
                 btn.disabled = false;
             }
         }
+
     </script>
 </body>
 

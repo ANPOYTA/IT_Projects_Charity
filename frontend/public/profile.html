@@ -21,6 +21,12 @@
             <a href="index.html#about">Про нас</a>
             <a href="donations.html">Актуальні збори</a>
         </nav>
+
+        <div class="burger-btn" id="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     
         <div class="header-user-block">
             <div class="header-user-text">
@@ -85,11 +91,11 @@
                 return;
             }
 
-            // Завантажуємо все паралельно
             loadUserProfile(token);
             fetchMyDonations(token);
             fetchMyCampaigns(token);
             setupDropdown();
+            setupBurgerMenu();
         });
 
         function setupDropdown() {
@@ -99,13 +105,11 @@
                 const userMenuContainer = document.getElementById('user-menu-container');
 
                 if (userIconBtn && userDropdown) {
-                    // Відкриття/закриття при кліку на іконку
                     userIconBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         userDropdown.classList.toggle('hidden');
                     });
 
-                    // Закриття при кліку поза межами меню
                     document.addEventListener('click', (e) => {
                         if (!userMenuContainer.contains(e.target)) {
                             userDropdown.classList.add('hidden');
@@ -116,12 +120,11 @@
                 if (logoutBtn) {
                     logoutBtn.addEventListener('click', () => {
                         localStorage.removeItem('jwt_token');
-                        window.location.href = 'index.html'; // Після виходу кидаємо на головну
+                        window.location.href = 'index.html'; 
                     });
                 }
             }
 
-        // 1. Завантаження даних профілю (Ім'я, Пошта, Статус)
         async function loadUserProfile(token) {
             try {
                 const response = await fetch(`${API_URL}/users/me`, {
@@ -131,23 +134,19 @@
 
                 const user = await response.json();
 
-                // Підставляємо дані в шапку
                 document.getElementById('profile-name').textContent = user.full_name;
                 document.getElementById('profile-email').textContent = user.email;
 
                 const userAvatarImg = document.querySelector('.header-avatar');
                 if (userAvatarImg) {
-                // Якщо в базі є avatar_url — беремо його, інакше ставимо заглушку
                     const defaultAvatar = 'images/user.svg'; 
                     userAvatarImg.src = user.avatar_url ? user.avatar_url : defaultAvatar;
             
-                    // Додатковий захист: якщо посилання в базі бите, покажемо заглушку
                     userAvatarImg.onerror = function() {
                         this.src = defaultAvatar;
                     };
                 }
 
-                // Перевірка верифікації для вкладки "Мої збори"
                 if (user.verification_status === 'verified') {
                     document.getElementById('verified-view').classList.remove('hidden');
                     document.getElementById('unverified-view').classList.add('hidden');
@@ -160,7 +159,6 @@
             }
         }
 
-        // 2. Завантаження донатів користувача
         async function fetchMyDonations(token) {
             const grid = document.getElementById('my-donations-grid');
             try {
@@ -182,7 +180,6 @@
             }
         }
 
-        // 3. Завантаження зборів, які створив користувач
         async function fetchMyCampaigns(token) {
             const grid = document.getElementById('my-campaigns-grid');
             try {
@@ -204,7 +201,6 @@
             }
         }
 
-        // Допоміжна функція для створення HTML картки
         function createCardHTML(campaign) {
             const percent = Math.min((campaign.current_amount / campaign.goal_amount) * 100, 100).toFixed(0);
             return `
@@ -243,6 +239,17 @@
                 });
             }, 100);
         }
+
+        function setupBurgerMenu() {
+                const burgerBtn = document.getElementById('burger-btn');
+                const menu = document.querySelector('.menu');
+
+                if (burgerBtn && menu) {
+                    burgerBtn.addEventListener('click', () => {
+                        menu.classList.toggle('active');
+                    });
+                }
+            }
     </script>
     
 </body>

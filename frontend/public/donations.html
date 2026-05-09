@@ -21,6 +21,11 @@
             <a href="index.html#about">Про нас</a>
             <a href="donations.html" class="active">Актуальні збори</a>
         </nav>
+        <div class="burger-btn" id="burger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
         <div class="auth">
             <a href="login.html" class="btn btn-primary" id="login-btn">Sign In &rarr;</a>
         
@@ -59,6 +64,7 @@
             fetchAllCampaigns();
             checkAuthState();
             setupDropdown();
+            setupBurgerMenu();
         });
 
         async function fetchAllCampaigns() {
@@ -160,6 +166,17 @@
                     logoutBtn.addEventListener('click', () => {
                         localStorage.removeItem('jwt_token');
                         window.location.reload();
+                    });
+                }
+            }
+
+        function setupBurgerMenu() {
+                const burgerBtn = document.getElementById('burger-btn');
+                const menu = document.querySelector('.menu');
+
+                if (burgerBtn && menu) {
+                    burgerBtn.addEventListener('click', () => {
+                        menu.classList.toggle('active');
                     });
                 }
             }

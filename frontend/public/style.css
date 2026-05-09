@@ -1081,14 +1081,20 @@ html {
         padding: 15px;
     }
 
-    .menu {
-        order: 3;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 15px;
-    }
+        .menu {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 99;
+            text-align: center;
+            transform: none;
+        }
 
     .auth {
         order: 2;
@@ -1104,12 +1110,16 @@ html {
         width: 100%;
     }
 
-    .stats-shape {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-top: 20px;
-    }
+        .stats-shape {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: space-around;
+            width: 100%;
+            margin: 20px auto 0 auto;
+            padding: 20px 10px;
+            border-radius: 50px;
+        }
 
     .hero-right {
         margin-top: 30px;
@@ -1153,14 +1163,75 @@ html {
         line-height: 1.2;
     }
 
-    .stats-shape {
-        flex-direction: column;
-        align-items: center;
-    }
+                .stats-shape {
+                    flex-direction: row;
+                    padding: 15px 5px;
+                }
+        
+                .stat-item h3 {
+                    font-size: 18px;
+                    margin-bottom: 2px;
+                }
+        
+                .stat-item p {
+                    font-size: 11px;
+                }
 
     .menu {
         flex-direction: column;
         align-items: center;
         gap: 10px;
+    }
+}
+
+.burger-btn {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.burger-btn span {
+    width: 25px;
+    height: 3px;
+    background-color: #000;
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    .header {
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+
+    .burger-btn {
+        display: flex;
+        order: 3;
+    }
+
+    .auth {
+        order: 2;
+        margin-left: auto;
+        margin-right: 15px;
+    }
+
+    .menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 99;
+        text-align: center;
+    }
+
+    .menu.active {
+        display: flex;
     }
 }
