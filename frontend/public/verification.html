@@ -40,12 +40,17 @@
                     <input type="text" id="passport-id" class="verify-input" placeholder="Введіть номер">
                 </div>
 
-                <div class="verify-upload-container">
-                    <p class="upload-label">Завантажте фото вашого паспорта</p>
-                    <div class="verify-file-box">
-                        <span id="file-name-1">Додати файл +</span>
-                        <input type="file" id="file-1" accept="image/*" onchange="updateFileName(this, 'file-name-1')">
-                    </div>
+               <div class="verify-upload-container">
+                    <p class="upload-label" id="label-text-1">Завантажте фото вашого паспорта</p>
+                    
+                    <input type="file" id="file-1" accept="image/*" style="display: none;" onchange="updateFileName(this, 1)">
+                    
+                    <label for="file-1" class="custom-upload-box">
+                        <div class="upload-content">
+                            <img src="images/clip.svg" alt="" class="clip-icon">
+                            <span id="file-name-display-1">Додати файл +</span>
+                        </div>
+                    </label>
                 </div>
 
                 <button class="btn-black" onclick="nextStep(1)">Підтвердити</button>
@@ -55,12 +60,17 @@
                 <h2>Паспорт громадянина України (Зад)</h2>
                 <p class="subtitle">Завантажте, будь ласка, фото задньої частини вашого паспорта</p>
 
-                <div class="verify-upload-container" style="margin-top: 40px;">
-                    <p class="upload-label">Завантажте фото вашого паспорта</p>
-                    <div class="verify-file-box">
-                        <span id="file-name-2">Додати файл +</span>
-                        <input type="file" id="file-2" accept="image/*" onchange="updateFileName(this, 'file-name-2')">
-                    </div>
+               <div class="verify-upload-container">
+                    <p class="upload-label" id="label-text2">Завантажте фото вашого паспорта</p>
+                    
+                    <input type="file" id="file-2" accept="image/*" style="display: none;" onchange="updateFileName(this, 2)">
+                    
+                    <label for="file-2" class="custom-upload-box">
+                        <div class="upload-content">
+                            <img src="images/clip.svg" alt="" class="clip-icon">
+                            <span id="file-name-display-2">Додати файл +</span>
+                        </div>
+                    </label>
                 </div>
 
                 <button class="btn-black" onclick="nextStep(2)">Підтвердити</button>
@@ -70,21 +80,20 @@
                 <h2>Ваше фото з паспортом</h2>
                 <p class="subtitle">Завантажте, будь ласка, фото, на якому ви тримаєте паспорт<br>Обличчя та паспорт
                     повинні бути чітко видимі</p>
-
-                <div class="verify-upload-container" style="margin-top: 40px;">
-                    <p class="upload-label">Завантажте фото вашого паспорта</p>
-                    <div class="verify-file-box">
-                        <span id="file-name-3">Додати файл +</span>
-                        <input type="file" id="file-3" accept="image/*" onchange="updateFileName(this, 'file-name-3')">
-                    </div>
+               <div class="verify-upload-container">
+                    <p class="upload-label" id="label-text-3">Завантажте фото вашого паспорта</p>
+                    
+                    <input type="file" id="file-3" accept="image/*" style="display: none;" onchange="updateFileName(this, 3)">
+                    
+                    <label for="file-3" class="custom-upload-box">
+                        <div class="upload-content">
+                            <img src="images/clip.svg" alt="" class="clip-icon">
+                            <span id="file-name-display-3">Додати файл +</span>
+                        </div>
+                    </label>
                 </div>
 
-                <button type="button" class="btn-black" id="finish-btn">Підтвердити</button>
-            </div>
-            <div id="step-success" class="verify-step hidden" style="text-align: center;">
-                <h2 style="margin-bottom: 20px;">Верифікація закінчена</h2>
-                <p style="margin-bottom: 30px;">Дякуємо за довіру, результати верифікації очікуйте впродовж 24 годин</p>
-                <a href="index.html" class="btn-large-green" style="display: block;">Повернутися на головну</a>
+                <button type="button" class="btn-black" id="finish-btn" onclick="finishVerification(event)">Підтвердити </button>
             </div>
 
             <div class="verify-support">
@@ -94,6 +103,7 @@
         </div>
 
         <div id="step-success" class="verify-success hidden">
+            <img src="images/verified.svg" alt="Успіх" class="success-icon">
             <h2>Верифікація закінчена</h2>
             <p>Дякуємо за довіру, результати верифікації очікуйте впродовж 24 годин</p>
             <a href="index.html" class="btn btn-large-green">Повернутися на головну сторінку</a>
@@ -102,7 +112,7 @@
     </main>
 
     <script>
-        const API_URL = 'http://127.0.0.1:8000'; // Адреса твого бекенда
+        const API_URL = 'http://127.0.0.1:8000'; 
 
         // Перевіряємо, чи юзер залогінений
         document.addEventListener("DOMContentLoaded", () => {
@@ -112,18 +122,25 @@
         });
 
         // Функція для відображення імені вибраного файлу
-        function updateFileName(input, textId) {
-            const display = document.getElementById(textId);
+        function updateFileName(input, stepNum) {
+            const labelText = document.getElementById(`label-text-${stepNum}`);
+            const displayInside = document.getElementById(`file-name-display-${stepNum}`);
+            
             if (input.files && input.files[0]) {
-                display.textContent = input.files[0].name;
-            } else {
-                display.textContent = 'Додати файл +';
+                const fileName = input.files[0].name;
+                
+                labelText.textContent = fileName;
+                labelText.style.color = "#00715D"; 
+                labelText.style.fontWeight = "600";
+                
+                if (displayInside) {
+                    displayInside.textContent = "Змінити файл";
+                }
             }
         }
 
         // Перехід між кроками + ВАЛІДАЦІЯ
         function nextStep(currentStep) {
-            // Перевірка 1-го кроку
             if (currentStep === 1) {
                 const passportId = document.getElementById('passport-id').value.trim();
                 const file1 = document.getElementById('file-1').files.length;
@@ -138,7 +155,6 @@
                 }
             }
 
-            // Перевірка 2-го кроку
             if (currentStep === 2) {
                 const file2 = document.getElementById('file-2').files.length;
                 if (file2 === 0) {
@@ -147,14 +163,11 @@
                 }
             }
 
-            // Якщо все ок — міняємо екрани
             document.getElementById(`step-${currentStep}`).classList.add('hidden');
             document.getElementById(`step-${currentStep + 1}`).classList.remove('hidden');
 
-            // Оновлюємо прогрес-бар
             const currentCircle = document.getElementById(`circle-${currentStep}`);
             currentCircle.innerHTML = '✔';
-
             const nextLine = document.getElementById(`line-${currentStep}`);
             nextLine.classList.add('active');
 
@@ -162,18 +175,16 @@
             nextCircle.classList.add('active');
         }
 
-        document.getElementById('finish-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            finishVerification(e);
-        });
-
         // Фініш верифікації та ВІДПРАВКА НА БЕКЕНД
        async function finishVerification(event) {
-            if (event) event.preventDefault();
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
             const file3 = document.getElementById('file-3').files;
             if (file3.length === 0) {
-                alert('Завантажте фото!');
+                alert('Будь ласка, завантажте ваше фото з паспортом.');
                 return;
             }
 
@@ -184,6 +195,10 @@
             formData.append('photo_back', document.getElementById('file-2').files[0]);
             formData.append('photo_selfie', document.getElementById('file-3').files[0]);
 
+            const btn = document.getElementById('finish-btn') || document.querySelector('#step-3 .btn-black');
+            btn.textContent = 'Відправка...';
+            btn.disabled = true;
+
             try {
                 const response = await fetch(`${API_URL}/users/verify`, {
                     method: 'POST',
@@ -192,23 +207,22 @@
                 });
 
                 if (response.ok) {
-                    console.log("Дані успішно відправлені");
-
-                    document.getElementById('step-3').classList.add('hidden');
-                    document.getElementById('support-block').classList.add('hidden');
+                    console.log("Успіх! Перемикаємо екрани.");
                     
-                    document.querySelector('.verification-header').style.visibility = 'hidden';
+                    const formBox = document.getElementById('verification-form-box');
+                    formBox.style.display = 'none';
+                    
                     const successBlock = document.getElementById('step-success');
                     successBlock.classList.remove('hidden');
-                    document.getElementById('verification-form-box').style.minHeight = 'auto';
-
-                    alert("Верифікацію завершено!");
-                }else {
-                    alert("Помилка сервера");
+                    successBlock.style.display = 'block'; 
+                    
+                    document.querySelector('.verification-header').style.display = 'none';
                 }
             } catch (e) {
-                alert("Помилка з'єднання");
+                console.error(e);
             }
+
+            return false;
         }
     </script>
 </body>
