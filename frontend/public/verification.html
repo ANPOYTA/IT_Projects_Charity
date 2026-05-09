@@ -40,17 +40,12 @@
                     <input type="text" id="passport-id" class="verify-input" placeholder="Введіть номер">
                 </div>
 
-               <div class="verify-upload-container">
-                    <p class="upload-label" id="label-text-1">Завантажте фото вашого паспорта</p>
-                    
-                    <input type="file" id="file-1" accept="image/*" style="display: none;" onchange="updateFileName(this, 1)">
-                    
-                    <label for="file-1" class="custom-upload-box">
-                        <div class="upload-content">
-                            <img src="images/clip.svg" alt="" class="clip-icon">
-                            <span id="file-name-display-1">Додати файл +</span>
-                        </div>
-                    </label>
+                <div class="verify-upload-container">
+                    <p class="upload-label">Завантажте фото вашого паспорта</p>
+                    <div class="verify-file-box">
+                        <span id="file-name-1">Додати файл +</span>
+                        <input type="file" id="file-1" accept="image/*" onchange="updateFileName(this, 'file-name-1')">
+                    </div>
                 </div>
 
                 <button class="btn-black" onclick="nextStep(1)">Підтвердити</button>
@@ -60,17 +55,12 @@
                 <h2>Паспорт громадянина України (Зад)</h2>
                 <p class="subtitle">Завантажте, будь ласка, фото задньої частини вашого паспорта</p>
 
-               <div class="verify-upload-container">
-                    <p class="upload-label" id="label-text2">Завантажте фото вашого паспорта</p>
-                    
-                    <input type="file" id="file-2" accept="image/*" style="display: none;" onchange="updateFileName(this, 2)">
-                    
-                    <label for="file-2" class="custom-upload-box">
-                        <div class="upload-content">
-                            <img src="images/clip.svg" alt="" class="clip-icon">
-                            <span id="file-name-display-2">Додати файл +</span>
-                        </div>
-                    </label>
+                <div class="verify-upload-container" style="margin-top: 40px;">
+                    <p class="upload-label">Завантажте фото вашого паспорта</p>
+                    <div class="verify-file-box">
+                        <span id="file-name-2">Додати файл +</span>
+                        <input type="file" id="file-2" accept="image/*" onchange="updateFileName(this, 'file-name-2')">
+                    </div>
                 </div>
 
                 <button class="btn-black" onclick="nextStep(2)">Підтвердити</button>
@@ -80,20 +70,16 @@
                 <h2>Ваше фото з паспортом</h2>
                 <p class="subtitle">Завантажте, будь ласка, фото, на якому ви тримаєте паспорт<br>Обличчя та паспорт
                     повинні бути чітко видимі</p>
-               <div class="verify-upload-container">
-                    <p class="upload-label" id="label-text-3">Завантажте фото вашого паспорта</p>
-                    
-                    <input type="file" id="file-3" accept="image/*" style="display: none;" onchange="updateFileName(this, 3)">
-                    
-                    <label for="file-3" class="custom-upload-box">
-                        <div class="upload-content">
-                            <img src="images/clip.svg" alt="" class="clip-icon">
-                            <span id="file-name-display-3">Додати файл +</span>
-                        </div>
-                    </label>
+
+                <div class="verify-upload-container" style="margin-top: 40px;">
+                    <p class="upload-label">Завантажте фото вашого паспорта</p>
+                    <div class="verify-file-box">
+                        <span id="file-name-3">Додати файл +</span>
+                        <input type="file" id="file-3" accept="image/*" onchange="updateFileName(this, 'file-name-3')">
+                    </div>
                 </div>
 
-                <button type="button" class="btn-black" id="finish-btn" onclick="finishVerification(event)">Підтвердити </button>
+                <button class="btn-black" onclick="finishVerification()">Підтвердити</button>
             </div>
 
             <div class="verify-support">
@@ -112,7 +98,7 @@
     </main>
 
     <script>
-        const API_URL = 'http://127.0.0.1:8000'; 
+        const API_URL = 'https://charity-backend-aiyz.onrender.com'; // Адреса твого бекенда
 
         // Перевіряємо, чи юзер залогінений
         document.addEventListener("DOMContentLoaded", () => {
@@ -122,32 +108,25 @@
         });
 
         // Функція для відображення імені вибраного файлу
-        function updateFileName(input, stepNum) {
-            const labelText = document.getElementById(`label-text-${stepNum}`);
-            const displayInside = document.getElementById(`file-name-display-${stepNum}`);
-            
+        function updateFileName(input, textId) {
+            const display = document.getElementById(textId);
             if (input.files && input.files[0]) {
-                const fileName = input.files[0].name;
-                
-                labelText.textContent = fileName;
-                labelText.style.color = "#00715D"; 
-                labelText.style.fontWeight = "600";
-                
-                if (displayInside) {
-                    displayInside.textContent = "Змінити файл";
-                }
+                display.textContent = input.files[0].name;
+            } else {
+                display.textContent = 'Додати файл +';
             }
         }
 
         // Перехід між кроками + ВАЛІДАЦІЯ
         function nextStep(currentStep) {
+            // Перевірка 1-го кроку
             if (currentStep === 1) {
                 const passportId = document.getElementById('passport-id').value.trim();
                 const file1 = document.getElementById('file-1').files.length;
 
                 if (!passportId) {
                     alert('Будь ласка, введіть ID паспорта.');
-                    return;
+                    return; // Зупиняємо функцію, далі не йдемо
                 }
                 if (file1 === 0) {
                     alert('Будь ласка, завантажте фото передньої частини паспорта.');
@@ -155,6 +134,7 @@
                 }
             }
 
+            // Перевірка 2-го кроку
             if (currentStep === 2) {
                 const file2 = document.getElementById('file-2').files.length;
                 if (file2 === 0) {
@@ -163,25 +143,24 @@
                 }
             }
 
+            // Якщо все ок — міняємо екрани
             document.getElementById(`step-${currentStep}`).classList.add('hidden');
             document.getElementById(`step-${currentStep + 1}`).classList.remove('hidden');
 
+            // Оновлюємо прогрес-бар
             const currentCircle = document.getElementById(`circle-${currentStep}`);
-            currentCircle.innerHTML = '✔';
+            currentCircle.innerHTML = '✔'; // Ставимо галочку
+
             const nextLine = document.getElementById(`line-${currentStep}`);
-            nextLine.classList.add('active');
+            nextLine.classList.add('active'); // Зафарбовуємо лінію
 
             const nextCircle = document.getElementById(`circle-${currentStep + 1}`);
-            nextCircle.classList.add('active');
+            nextCircle.classList.add('active'); // Робимо наступний кружечок зеленим
         }
 
         // Фініш верифікації та ВІДПРАВКА НА БЕКЕНД
-       async function finishVerification(event) {
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
+        async function finishVerification() {
+            // Перевірка 3-го кроку
             const file3 = document.getElementById('file-3').files;
             if (file3.length === 0) {
                 alert('Будь ласка, завантажте ваше фото з паспортом.');
@@ -189,40 +168,47 @@
             }
 
             const token = localStorage.getItem('jwt_token');
+
+            // Пакуємо всі дані у FormData (бо ми шлемо файли)
             const formData = new FormData();
             formData.append('passport_id', document.getElementById('passport-id').value.trim());
             formData.append('photo_front', document.getElementById('file-1').files[0]);
             formData.append('photo_back', document.getElementById('file-2').files[0]);
             formData.append('photo_selfie', document.getElementById('file-3').files[0]);
 
-            const btn = document.getElementById('finish-btn') || document.querySelector('#step-3 .btn-black');
+            // Для краси: можемо змінити текст на кнопці, поки йде завантаження
+            const btn = document.querySelector('#step-3 .btn-black');
+            const originalText = btn.textContent;
             btn.textContent = 'Відправка...';
             btn.disabled = true;
 
             try {
+                // Відправляємо на бекенд (узгодь точну адресу ендпоінту з бекендером, наприклад /users/verify)
                 const response = await fetch(`${API_URL}/users/verify`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // З FormData заголовок 'Content-Type' браузер ставить автоматично!
+                    },
                     body: formData
                 });
 
                 if (response.ok) {
-                    console.log("Успіх! Перемикаємо екрани.");
-                    
-                    const formBox = document.getElementById('verification-form-box');
-                    formBox.style.display = 'none';
-                    
-                    const successBlock = document.getElementById('step-success');
-                    successBlock.classList.remove('hidden');
-                    successBlock.style.display = 'block'; 
-                    
-                    document.querySelector('.verification-header').style.display = 'none';
+                    // Якщо бекенд сказав "ОК", показуємо фінальний екран
+                    document.getElementById('verification-form-box').classList.add('hidden');
+                    document.querySelector('.verification-header').classList.add('hidden');
+                    document.getElementById('step-success').classList.remove('hidden');
+                } else {
+                    alert('Помилка при відправці документів. Можливо, такий паспорт вже існує.');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
                 }
-            } catch (e) {
-                console.error(e);
+            } catch (error) {
+                console.error("Помилка відправки:", error);
+                alert("Не вдалося з'єднатися з сервером. Спробуйте пізніше.");
+                btn.textContent = originalText;
+                btn.disabled = false;
             }
-
-            return false;
         }
     </script>
 </body>
